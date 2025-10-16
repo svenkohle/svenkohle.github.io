@@ -94,13 +94,53 @@
                 font-weight: bold;
             }
 
-            .field-input {
+            .field-input-container {
+                display: flex;
+                align-items: center;
+                gap: 10px;
                 flex: 1;
+            }
+
+            .field-input {
                 padding: 8px;
                 border: 1px solid var(--border-color);
                 border-radius: 4px;
                 background-color: var(--input-bg);
                 color: var(--text-color);
+                flex: 1;
+            }
+
+            .field-select {
+                padding: 8px;
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                background-color: var(--input-bg);
+                color: var(--text-color);
+                flex: 0;
+            }
+
+            .options-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-top: 5px;
+            }
+
+            .option-btn {
+                padding: 4px 10px;
+                background-color: var(--button-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 0.9em;
+            }
+
+            .option-btn:hover {
+                background-color: #e0e0e0;
+            }
+
+            .dark-mode .option-btn:hover {
+                background-color: #444;
             }
 
             .date-controls {
@@ -297,6 +337,11 @@
                     flex-direction: column;
                     align-items: stretch;
                 }
+                
+                .field-input-container {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
             }
         </style>
     </head>
@@ -323,83 +368,112 @@
             <div class="field-group">
                 <div class="field-row">
                     <label class="field-label">Target:</label>
-                    <input type="text" id="target" class="field-input" />
+                    <div class="field-input-container">
+                        <input type="text" id="target" class="field-input" />
+                    </div>
                 </div>
 
                 <div class="field-row">
                     <label class="field-label">Optics:</label>
-                    <select id="optics" class="field-input"></select>
+                    <div class="field-input-container">
+                        <input type="text" id="optics" class="field-input" />
+                        <select id="optics-select" class="field-select">
+                            <option value="">Select Optics</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="field-row">
                     <label class="field-label">Filter:</label>
-                    <select id="filter" class="field-input"></select>
+                    <div class="field-input-container">
+                        <input type="text" id="filter" class="field-input" />
+                        <select id="filter-select" class="field-select">
+                            <option value="">Select Filter</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="field-row">
                     <label class="field-label">Camera:</label>
-                    <select id="camera" class="field-input"></select>
+                    <div class="field-input-container">
+                        <input type="text" id="camera" class="field-input" />
+                        <select id="camera-select" class="field-select">
+                            <option value="">Select Camera</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="field-row">
                     <label class="field-label">Exposures:</label>
-                    <input type="text" id="exposures" class="field-input" />
+                    <div class="field-input-container">
+                        <input type="text" id="exposures" class="field-input" />
+                    </div>
                 </div>
 
                 <div class="field-row">
                     <label class="field-label">Date:</label>
-                    <input
-                        type="text"
-                        id="date"
-                        class="field-input"
-                        placeholder="e.g., YYYY-MM-DD"
-                    />
-                    <div class="date-controls">
-                        <button id="todayBtn" class="date-btn">Today</button>
-                        <button id="yesterdayBtn" class="date-btn">
-                            Yesterday
-                        </button>
+                    <div class="field-input-container">
+                        <input
+                            type="text"
+                            id="date"
+                            class="field-input"
+                            placeholder="e.g., YYYY-MM-DD"
+                        />
+                        <div class="date-controls">
+                            <button id="todayBtn" class="date-btn">Today</button>
+                            <button id="yesterdayBtn" class="date-btn">
+                                Yesterday
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <div class="field-row">
                     <label class="field-label">Time:</label>
-                    <input
-                        type="text"
-                        id="time"
-                        class="field-input"
-                        placeholder="e.g., HH:MM"
-                    />
+                    <div class="field-input-container">
+                        <input
+                            type="text"
+                            id="time"
+                            class="field-input"
+                            placeholder="e.g., HH:MM"
+                        />
+                    </div>
                 </div>
 
                 <div class="field-row">
                     <label class="field-label">Processing:</label>
-                    <input
-                        type="text"
-                        id="processing"
-                        class="field-input"
-                        placeholder="e.g., PI+RC+LR"
-                    />
+                    <div class="field-input-container">
+                        <input
+                            type="text"
+                            id="processing"
+                            class="field-input"
+                            placeholder="e.g., PI+RC+LR"
+                        />
+                    </div>
                 </div>
 
                 <div class="field-row">
                     <label class="field-label">Filetype:</label>
-                    <select id="filetype" class="field-input">
-                        <option value="fits">FITS</option>
-                        <option value="xisf">XISF</option>
-                        <option value="png">PNG</option>
-                        <option value="tif">TIF</option>
-                        <option value="jpg">JPG</option>
-                    </select>
+                    <div class="field-input-container">
+                        <select id="filetype" class="field-select">
+                            <option value="fits">FITS</option>
+                            <option value="xisf">XISF</option>
+                            <option value="png">PNG</option>
+                            <option value="tif">TIF</option>
+                            <option value="jpg">JPG</option>
+                        </select>
+                    </div>
                 </div>
 
                 <!-- Title Separator -->
                 <div class="field-row">
                     <label class="field-label">Title Sep:</label>
-                    <select id="titleSeparator" class="field-input">
-                        <option value="-">Hyphen (-)</option>
-                        <option value="|">Pipe (|)</option>
-                    </select>
+                    <div class="field-input-container">
+                        <select id="titleSeparator" class="field-select">
+                            <option value="-">Hyphen (-)</option>
+                            <option value="|">Pipe (|)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -559,18 +633,88 @@
                 helpModal: document.getElementById("helpModal"),
                 darkModeToggle: document.getElementById("darkModeToggle"),
                 notification: document.getElementById("notification"),
+                opticsSelect: document.getElementById("optics-select"),
+                filterSelect: document.getElementById("filter-select"),
+                cameraSelect: document.getElementById("camera-select"),
             };
 
             // Initialize dropdowns
             function initDropdowns() {
-                Object.keys(OPTIONS).forEach((key) => {
-                    const select = elements[key];
-                    OPTIONS[key].forEach((option) => {
-                        const optionElement = document.createElement("option");
-                        optionElement.value = option;
-                        optionElement.textContent = option;
-                        select.appendChild(optionElement);
-                    });
+                // Create options for optics, filter and camera dropdowns
+                OPTIONS.optics.forEach((option) => {
+                    const optionElement = document.createElement("option");
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    elements.opticsSelect.appendChild(optionElement);
+                });
+
+                OPTIONS.filter.forEach((option) => {
+                    const optionElement = document.createElement("option");
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    elements.filterSelect.appendChild(optionElement);
+                });
+
+                OPTIONS.camera.forEach((option) => {
+                    const optionElement = document.createElement("option");
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    elements.cameraSelect.appendChild(optionElement);
+                });
+
+                // Set up event listeners for dropdowns
+                elements.opticsSelect.addEventListener("change", function () {
+                    elements.optics.value = this.value;
+                    updateResults();
+                });
+
+                elements.filterSelect.addEventListener("change", function () {
+                    elements.filter.value = this.value;
+                    updateResults();
+                });
+
+                elements.cameraSelect.addEventListener("change", function () {
+                    elements.camera.value = this.value;
+                    updateResults();
+                });
+
+                // Set up event listeners for manual input fields
+                elements.optics.addEventListener("input", function () {
+                    // Update dropdown to match manual input (if it's a valid option)
+                    const selectedOption = OPTIONS.optics.find(
+                        (opt) => opt === this.value,
+                    );
+                    if (selectedOption) {
+                        elements.opticsSelect.value = selectedOption;
+                    } else {
+                        // If not found, set to empty (no selection)
+                        elements.opticsSelect.value = "";
+                    }
+                    updateResults();
+                });
+
+                elements.filter.addEventListener("input", function () {
+                    const selectedOption = OPTIONS.filter.find(
+                        (opt) => opt === this.value,
+                    );
+                    if (selectedOption) {
+                        elements.filterSelect.value = selectedOption;
+                    } else {
+                        elements.filterSelect.value = "";
+                    }
+                    updateResults();
+                });
+
+                elements.camera.addEventListener("input", function () {
+                    const selectedOption = OPTIONS.camera.find(
+                        (opt) => opt === this.value,
+                    );
+                    if (selectedOption) {
+                        elements.cameraSelect.value = selectedOption;
+                    } else {
+                        elements.cameraSelect.value = "";
+                    }
+                    updateResults();
                 });
             }
 
@@ -676,10 +820,37 @@
                             elements.target.value = preset[key];
                         } else if (key === "optics" && elements.optics) {
                             elements.optics.value = preset[key];
+                            // Update corresponding dropdown
+                            const selectedOption = OPTIONS.optics.find(
+                                (opt) => opt === preset[key],
+                            );
+                            if (selectedOption) {
+                                elements.opticsSelect.value = selectedOption;
+                            } else {
+                                elements.opticsSelect.value = "";
+                            }
                         } else if (key === "filter" && elements.filter) {
                             elements.filter.value = preset[key];
+                            // Update corresponding dropdown
+                            const selectedOption = OPTIONS.filter.find(
+                                (opt) => opt === preset[key],
+                            );
+                            if (selectedOption) {
+                                elements.filterSelect.value = selectedOption;
+                            } else {
+                                elements.filterSelect.value = "";
+                            }
                         } else if (key === "camera" && elements.camera) {
                             elements.camera.value = preset[key];
+                            // Update corresponding dropdown
+                            const selectedOption = OPTIONS.camera.find(
+                                (opt) => opt === preset[key],
+                            );
+                            if (selectedOption) {
+                                elements.cameraSelect.value = selectedOption;
+                            } else {
+                                elements.cameraSelect.value = "";
+                            }
                         } else if (key === "exposures" && elements.exposures) {
                             elements.exposures.value = preset[key];
                         }
@@ -720,10 +891,37 @@
                         elements.target.value = randomValue;
                     } else if (field.key === "optics") {
                         elements.optics.value = randomValue;
+                        // Update dropdown
+                        const selectedOption = OPTIONS.optics.find(
+                            (opt) => opt === randomValue,
+                        );
+                        if (selectedOption) {
+                            elements.opticsSelect.value = selectedOption;
+                        } else {
+                            elements.opticsSelect.value = "";
+                        }
                     } else if (field.key === "filter") {
                         elements.filter.value = randomValue;
+                        // Update dropdown
+                        const selectedOption = OPTIONS.filter.find(
+                            (opt) => opt === randomValue,
+                        );
+                        if (selectedOption) {
+                            elements.filterSelect.value = selectedOption;
+                        } else {
+                            elements.filterSelect.value = "";
+                        }
                     } else if (field.key === "camera") {
                         elements.camera.value = randomValue;
+                        // Update dropdown
+                        const selectedOption = OPTIONS.camera.find(
+                            (opt) => opt === randomValue,
+                        );
+                        if (selectedOption) {
+                            elements.cameraSelect.value = selectedOption;
+                        } else {
+                            elements.cameraSelect.value = "";
+                        }
                     } else if (field.key === "exposures") {
                         elements.exposures.value = randomValue;
                     } else if (field.key === "processing") {
@@ -793,7 +991,7 @@
             function init() {
                 initDropdowns();
 
-                // Event listeners for fields
+                // Event listeners for fields (except the option buttons which are handled above)
                 document.querySelectorAll("input, select").forEach((el) => {
                     el.addEventListener("change", updateResults);
                 });
