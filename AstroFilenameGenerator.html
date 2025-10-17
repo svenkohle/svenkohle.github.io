@@ -323,6 +323,145 @@
                 color: black;
             }
 
+            #configModal {
+                display: none;
+                position: fixed;
+                z-index: 1002;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+
+            .config-modal-content {
+                background-color: var(--bg-color);
+                margin: 15% auto;
+                padding: 20px;
+                border-radius: 8px;
+                width: 80%;
+                max-width: 500px;
+            }
+
+            .config-actions {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 20px;
+            }
+
+            .config-btn {
+                padding: 10px 15px;
+                background-color: var(--button-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .config-btn:hover {
+                background-color: #e0e0e0;
+            }
+
+            .dark-mode .config-btn:hover {
+                background-color: #444;
+            }
+
+            .file-input-wrapper {
+                position: relative;
+                overflow: hidden;
+                display: inline-block;
+            }
+
+            .file-input-wrapper input[type="file"] {
+                position: absolute;
+                left: 0;
+                top: 0;
+                opacity: 0;
+                width: 100%;
+                height: 100%;
+                cursor: pointer;
+            }
+
+            .file-input-label {
+                display: inline-block;
+                padding: 10px 15px;
+                background-color: var(--button-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .file-input-label:hover {
+                background-color: #e0e0e0;
+            }
+
+            .dark-mode .file-input-label:hover {
+                background-color: #444;
+            }
+
+            /* Calendar styles */
+            .calendar-container {
+                position: absolute;
+                z-index: 1003;
+                background-color: var(--bg-color);
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                padding: 20px;
+                width: 300px;
+                display: none;
+            }
+
+            .calendar-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+            }
+
+            .calendar-nav-btn {
+                background-color: var(--button-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                cursor: pointer;
+                padding: 5px 10px;
+            }
+
+            .calendar-month-year {
+                font-weight: bold;
+                font-size: 1.2em;
+            }
+
+            .calendar-grid {
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                gap: 5px;
+                text-align: center;
+            }
+
+            .calendar-day-header {
+                font-weight: bold;
+                padding: 5px 0;
+            }
+
+            .calendar-day {
+                padding: 8px 0;
+                cursor: pointer;
+                border-radius: 4px;
+                transition: background-color 0.2s;
+            }
+
+            .calendar-day:hover {
+                background-color: var(--button-bg);
+            }
+
+            .calendar-day.selected {
+                background-color: #2196f3;
+                color: white;
+            }
+
+            .calendar-day.other-month {
+                opacity: 0.5;
+            }
+
             @media (max-width: 600px) {
                 .field-row {
                     flex-direction: column;
@@ -337,7 +476,7 @@
                     flex-direction: column;
                     align-items: stretch;
                 }
-                
+
                 .field-input-container {
                     flex-direction: column;
                     align-items: stretch;
@@ -350,7 +489,7 @@
             <h1>Astro Filename Generator</h1>
 
             <!-- Presets -->
-            <div class="presets">
+            <div class="presets" id="presetButtons">
                 <button class="preset-btn" data-preset="solar">Solar</button>
                 <button class="preset-btn" data-preset="planetary">
                     Planetary
@@ -362,6 +501,7 @@
                     Clear All
                 </button>
                 <button id="shuffleBtn" class="preset-btn">Shuffle</button>
+                <button id="configBtn" class="preset-btn">Configuration</button>
             </div>
 
             <!-- Input Fields -->
@@ -420,9 +560,9 @@
                             placeholder="e.g., YYYY-MM-DD"
                         />
                         <div class="date-controls">
-                            <button id="todayBtn" class="date-btn">Today</button>
-                            <button id="yesterdayBtn" class="date-btn">
-                                Yesterday
+                            <!-- Calendar button replaces Today/Yesterday -->
+                            <button id="calendarBtn" class="date-btn">
+                                Calendar
                             </button>
                         </div>
                     </div>
@@ -474,6 +614,29 @@
                             <option value="|">Pipe (|)</option>
                         </select>
                     </div>
+                </div>
+            </div>
+
+            <!-- Calendar -->
+            <div id="calendar" class="calendar-container">
+                <div class="calendar-header">
+                    <button id="prevMonth" class="calendar-nav-btn">
+                        &lt;
+                    </button>
+                    <div class="calendar-month-year">Month Year</div>
+                    <button id="nextMonth" class="calendar-nav-btn">
+                        &gt;
+                    </button>
+                </div>
+                <div class="calendar-grid">
+                    <div class="calendar-day-header">Sun</div>
+                    <div class="calendar-day-header">Mon</div>
+                    <div class="calendar-day-header">Tue</div>
+                    <div class="calendar-day-header">Wed</div>
+                    <div class="calendar-day-header">Thu</div>
+                    <div class="calendar-day-header">Fri</div>
+                    <div class="calendar-day-header">Sat</div>
+                    <!-- Calendar days will be generated here -->
                 </div>
             </div>
 
@@ -539,14 +702,39 @@
                         the buttons
                     </li>
                     <li>Toggle between light and dark modes</li>
-                    <li>
-                        Use "Today" or "Yesterday" buttons to set the date
-                        quickly
-                    </li>
+                    <li>Use the Calendar button to select any date</li>
                 </ul>
                 <p>
                     To customize presets and dropdown options, edit the
                     configuration at the top of this HTML file.
+                </p>
+            </div>
+        </div>
+
+        <!-- Configuration Modal -->
+        <div id="configModal">
+            <div class="config-modal-content">
+                <span class="close">&times;</span>
+                <h2>Configuration Manager</h2>
+                <p>Save or load your configuration settings:</p>
+
+                <div class="config-actions">
+                    <button id="saveConfigBtn" class="config-btn">
+                        Save Configuration
+                    </button>
+                    <div class="file-input-wrapper">
+                        <span class="file-input-label">Load Configuration</span>
+                        <input
+                            type="file"
+                            id="loadConfigInput"
+                            accept=".json"
+                        />
+                    </div>
+                </div>
+
+                <p style="margin-top: 20px; font-size: 0.9em">
+                    <strong>Configuration format:</strong><br />
+                    Presets and dropdown options will be saved as JSON.
                 </p>
             </div>
         </div>
@@ -625,8 +813,7 @@
                 titleResult: document.getElementById("title-result"),
                 copyFilename: document.getElementById("copy-filename"),
                 copyTitle: document.getElementById("copy-title"),
-                todayBtn: document.getElementById("todayBtn"),
-                yesterdayBtn: document.getElementById("yesterdayBtn"),
+                calendarBtn: document.getElementById("calendarBtn"),
                 shuffleBtn: document.getElementById("shuffleBtn"),
                 helpBtn: document.getElementById("helpBtn"),
                 closeModal: document.querySelector(".close"),
@@ -636,7 +823,21 @@
                 opticsSelect: document.getElementById("optics-select"),
                 filterSelect: document.getElementById("filter-select"),
                 cameraSelect: document.getElementById("camera-select"),
+                configBtn: document.getElementById("configBtn"),
+                configModal: document.getElementById("configModal"),
+                saveConfigBtn: document.getElementById("saveConfigBtn"),
+                loadConfigInput: document.getElementById("loadConfigInput"),
+                calendar: document.getElementById("calendar"),
+                prevMonth: document.getElementById("prevMonth"),
+                nextMonth: document.getElementById("nextMonth"),
+                monthYear: document.querySelector(".calendar-month-year"),
+                presetButtons: document.getElementById("presetButtons")
             };
+
+            // Calendar state
+            let currentMonth = new Date().getMonth();
+            let currentYear = new Date().getFullYear();
+            let selectedDate = null;
 
             // Initialize dropdowns
             function initDropdowns() {
@@ -961,17 +1162,6 @@
                 updateResults();
             }
 
-            // Set yesterday's date
-            function setYesterday() {
-                const now = new Date();
-                now.setDate(now.getDate() - 1);
-                const year = now.getFullYear();
-                const month = String(now.getMonth() + 1).padStart(2, "0");
-                const day = String(now.getDate()).padStart(2, "0");
-                elements.date.value = `${year}-${month}-${day}`;
-                updateResults();
-            }
-
             // Toggle dark mode
             function toggleDarkMode() {
                 document.body.classList.toggle("dark-mode");
@@ -987,9 +1177,286 @@
                 elements.helpModal.style.display = "none";
             }
 
+            // Show configuration modal
+            function showConfig() {
+                elements.configModal.style.display = "block";
+            }
+
+            // Close configuration modal
+            function closeConfig() {
+                elements.configModal.style.display = "none";
+            }
+
+            // Save configuration to JSON file
+            function saveConfig() {
+                const config = {
+                    presets: PRESETS,
+                    options: OPTIONS,
+                };
+
+                const dataStr = JSON.stringify(config, null, 2);
+                const dataUri =
+                    "data:application/json;charset=utf-8," +
+                    encodeURIComponent(dataStr);
+
+                const exportFileDefaultName = "astro-filename-config.json";
+
+                const linkElement = document.createElement("a");
+                linkElement.setAttribute("href", dataUri);
+                linkElement.setAttribute("download", exportFileDefaultName);
+                linkElement.click();
+
+                // Show notification
+                showNotification("Configuration saved successfully!");
+            }
+
+            // Load configuration from JSON file
+            function loadConfig(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    try {
+                        const config = JSON.parse(e.target.result);
+
+                        // Update presets and options
+                        if (config.presets) {
+                            Object.assign(PRESETS, config.presets);
+                        }
+
+                        if (config.options) {
+                            Object.assign(OPTIONS, config.options);
+                        }
+
+                        // Update dropdowns
+                        updateDropdowns();
+
+                        // Refresh preset buttons to show only those in loaded config
+                        refreshPresetButtons();
+
+                        // Apply current values to fields (if they exist)
+                        if (elements.target.value) applyPreset("solar"); // Just to trigger update
+
+                        showNotification("Configuration loaded successfully!");
+                    } catch (error) {
+                        console.error("Error parsing config file:", error);
+                        showNotification(
+                            "Error loading configuration file!",
+                            true,
+                        );
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            // Update dropdowns after loading config
+            function updateDropdowns() {
+                // Clear existing options
+                elements.opticsSelect.innerHTML =
+                    '<option value="">Select Optics</option>';
+                elements.filterSelect.innerHTML =
+                    '<option value="">Select Filter</option>';
+                elements.cameraSelect.innerHTML =
+                    '<option value="">Select Camera</option>';
+
+                // Add new options
+                OPTIONS.optics.forEach((opt) => {
+                    const option = document.createElement("option");
+                    option.value = opt;
+                    option.textContent = opt;
+                    elements.opticsSelect.appendChild(option);
+                });
+
+                OPTIONS.filter.forEach((opt) => {
+                    const option = document.createElement("option");
+                    option.value = opt;
+                    option.textContent = opt;
+                    elements.filterSelect.appendChild(option);
+                });
+
+                OPTIONS.camera.forEach((opt) => {
+                    const option = document.createElement("option");
+                    option.value = opt;
+                    option.textContent = opt;
+                    elements.cameraSelect.appendChild(option);
+                });
+            }
+
+            // Refresh preset buttons based on current PRESETS
+            function refreshPresetButtons() {
+                // Remove all existing preset buttons except the special ones (Clear, Shuffle, Config)
+                const presetButtons = elements.presetButtons.querySelectorAll('.preset-btn');
+                presetButtons.forEach(btn => {
+                    if (!btn.id || (btn.id !== 'shuffleBtn' && btn.id !== 'configBtn')) {
+                        elements.presetButtons.removeChild(btn);
+                    }
+                });
+
+                // Add buttons for each preset in PRESETS
+                Object.keys(PRESETS).forEach(presetName => {
+                    const button = document.createElement('button');
+                    button.className = 'preset-btn';
+                    button.setAttribute('data-preset', presetName);
+                    button.textContent = presetName.charAt(0).toUpperCase() + presetName.slice(1);
+                    elements.presetButtons.appendChild(button);
+                });
+
+                // Re-attach event listeners to new buttons
+                elements.presetButtons.querySelectorAll('.preset-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const preset = btn.getAttribute('data-preset');
+                        if (preset === 'clear') {
+                            applyPreset(preset);
+                        } else {
+                            applyPreset(preset);
+                        }
+                    });
+                });
+            }
+
+            // Show notification
+            function showNotification(message, isError = false) {
+                const notification = elements.notification;
+                notification.textContent = message;
+                notification.style.backgroundColor = isError
+                    ? "#f44336"
+                    : "#4caf50";
+                notification.style.display = "block";
+
+                setTimeout(() => {
+                    notification.style.display = "none";
+                }, 3000);
+            }
+
+            // Initialize calendar
+            function initCalendar() {
+                updateCalendar();
+
+                elements.calendarBtn.addEventListener("click", () => {
+                    elements.calendar.style.display =
+                        elements.calendar.style.display === "block"
+                            ? "none"
+                            : "block";
+                });
+
+                document.addEventListener("click", (event) => {
+                    if (
+                        !elements.calendar.contains(event.target) &&
+                        event.target !== elements.calendarBtn
+                    ) {
+                        elements.calendar.style.display = "none";
+                    }
+                });
+
+                // Navigation
+                elements.prevMonth.addEventListener("click", () => {
+                    currentMonth--;
+                    if (currentMonth < 0) {
+                        currentMonth = 11;
+                        currentYear--;
+                    }
+                    updateCalendar();
+                });
+
+                elements.nextMonth.addEventListener("click", () => {
+                    currentMonth++;
+                    if (currentMonth > 11) {
+                        currentMonth = 0;
+                        currentYear++;
+                    }
+                    updateCalendar();
+                });
+            }
+
+            // Update calendar display
+            function updateCalendar() {
+                elements.monthYear.textContent = new Date(
+                    currentYear,
+                    currentMonth,
+                ).toLocaleString("default", { month: "long", year: "numeric" });
+
+                // Clear existing dates
+                const daysGrid =
+                    elements.calendar.querySelector(".calendar-grid");
+                while (daysGrid.children.length > 7) {
+                    daysGrid.removeChild(daysGrid.lastChild);
+                }
+
+                // Get first day of month and number of days
+                const firstDay = new Date(
+                    currentYear,
+                    currentMonth,
+                    1,
+                ).getDay();
+                const daysInMonth = new Date(
+                    currentYear,
+                    currentMonth + 1,
+                    0,
+                ).getDate();
+
+                // Add empty cells for days before the first day of the month
+                for (let i = 0; i < firstDay; i++) {
+                    const emptyCell = document.createElement("div");
+                    emptyCell.classList.add("calendar-day", "other-month");
+                    daysGrid.appendChild(emptyCell);
+                }
+
+                // Add cells for each day of the month
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const dayCell = document.createElement("div");
+                    dayCell.classList.add("calendar-day");
+                    dayCell.textContent = i;
+
+                    // Check if this is today
+                    const today = new Date();
+                    if (
+                        currentYear === today.getFullYear() &&
+                        currentMonth === today.getMonth() &&
+                        i === today.getDate()
+                    ) {
+                        dayCell.classList.add("today");
+                    }
+
+                    // Check if this is selected
+                    if (
+                        selectedDate &&
+                        currentYear === selectedDate.getFullYear() &&
+                        currentMonth === selectedDate.getMonth() &&
+                        i === selectedDate.getDate()
+                    ) {
+                        dayCell.classList.add("selected");
+                    }
+
+                    // Add click event
+                    dayCell.addEventListener("click", () => {
+                        selectedDate = new Date(currentYear, currentMonth, i);
+                        updateDateField();
+                        updateCalendar();
+                    });
+
+                    daysGrid.appendChild(dayCell);
+                }
+            }
+
+            // Update date field with selected date
+            function updateDateField() {
+                if (selectedDate) {
+                    const year = selectedDate.getFullYear();
+                    const month = String(selectedDate.getMonth() + 1).padStart(
+                        2,
+                        "0",
+                    );
+                    const day = String(selectedDate.getDate()).padStart(2, "0");
+                    elements.date.value = `${year}-${month}-${day}`;
+                    updateResults();
+                }
+            }
+
             // Initialize the application
             function init() {
                 initDropdowns();
+                initCalendar();
 
                 // Event listeners for fields (except the option buttons which are handled above)
                 document.querySelectorAll("input, select").forEach((el) => {
@@ -1006,10 +1473,6 @@
 
                 // Shuffle button
                 elements.shuffleBtn.addEventListener("click", shufflePreset);
-
-                // Today and Yesterday buttons
-                elements.todayBtn.addEventListener("click", setToday);
-                elements.yesterdayBtn.addEventListener("click", setYesterday);
 
                 // Copy buttons
                 elements.copyFilename.addEventListener("click", () => {
@@ -1030,21 +1493,32 @@
                 elements.helpBtn.addEventListener("click", showHelp);
                 elements.closeModal.addEventListener("click", closeHelp);
 
+                // Configuration button
+                elements.configBtn.addEventListener("click", showConfig);
+                elements.saveConfigBtn.addEventListener("click", saveConfig);
+                elements.loadConfigInput.addEventListener("change", loadConfig);
+
+                // Close modals when clicking outside
+                window.addEventListener("click", (event) => {
+                    if (event.target === elements.helpModal) {
+                        closeHelp();
+                    }
+                    if (event.target === elements.configModal) {
+                        closeConfig();
+                    }
+                });
+
                 // Dark mode toggle
                 elements.darkModeToggle.addEventListener(
                     "change",
                     toggleDarkMode,
                 );
 
-                // Close modal when clicking outside
-                window.addEventListener("click", (event) => {
-                    if (event.target === elements.helpModal) {
-                        closeHelp();
-                    }
-                });
-
                 // Initial update
                 updateResults();
+                
+                // Initialize preset buttons based on initial PRESETS
+                refreshPresetButtons();
             }
 
             // Run initialization when page loads
