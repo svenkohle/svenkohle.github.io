@@ -13,6 +13,7 @@
                 --button-bg: #f0f0f0;
                 --input-bg: #ffffff;
                 --result-bg: #f8f8f8;
+                --button-text-color: #333333; /* Default text color for buttons */
             }
 
             .dark-mode {
@@ -22,8 +23,26 @@
                 --button-bg: #333333;
                 --input-bg: #2d2d2d;
                 --result-bg: #252525;
+                --button-text-color: #ffffff; /* Brighter text color for buttons in dark mode */
             }
 
+            /* Apply the button text color to all buttons including preset buttons */
+            .preset-btn,
+            .option-btn,
+            .date-btn,
+            .copy-btn,
+            .help-btn,
+            .config-btn,
+            .toggle-switch input + .slider,
+            .file-input-label {
+                color: var(--button-text-color);
+            }
+
+            /* Ensure dropdowns and other inputs also have proper text visibility */
+            .field-input,
+            .field-select {
+                color: var(--text-color);
+            }
             * {
                 box-sizing: border-box;
                 margin: 0;
@@ -525,6 +544,20 @@
                 </div>
 
                 <div class="field-row">
+                    <label class="field-label">Focal Length:</label>
+                    <div class="field-input-container">
+                        <input
+                            type="text"
+                            id="focalLength"
+                            class="field-input"
+                        />
+                        <select id="focalLength-select" class="field-select">
+                            <option value="">Select Focal Length</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field-row">
                     <label class="field-label">Aperture Ratio:</label>
                     <div class="field-input-container">
                         <input
@@ -610,7 +643,12 @@
                 <div class="field-row">
                     <label class="field-label">Author:</label>
                     <div class="field-input-container">
-                        <input type="text" id="author" class="field-input" value="Astrobrot"/>
+                        <input
+                            type="text"
+                            id="author"
+                            class="field-input"
+                            value="Astrobrot"
+                        />
                         <select id="author-select" class="field-select">
                             <option value="">Select Author</option>
                         </select>
@@ -775,6 +813,13 @@
                     'Refractor 8"',
                     "Solar Scope",
                 ],
+                focalLength: [
+                    "1000mm",
+                    "2000mm",
+                    "4000mm",
+                    "8000mm",
+                    "13000mm",
+                ],
                 apertureRatio: [
                     "F1.4",
                     "F2",
@@ -803,43 +848,42 @@
                     "ASI1600MM",
                     "ZWO ASI294MC",
                 ],
-                author: [
-                    'Astrobrot',
-                    'John Doe',
-                    'Jane Smith'
-                ]
+                author: ["Astrobrot", "John Doe", "Jane Smith"],
             };
 
             const PRESETS = {
                 solar: {
                     target: "Sun",
                     optics: "Solar Scope",
+                    focalLength: "2000mm",
                     apertureRatio: "F2.8",
                     filter: "Hydrogen Alpha",
                     camera: "CCD",
                     exposures: "3x10s",
                     filetype: "fits",
-                    author: "Astrobrot"
+                    author: "Astrobrot",
                 },
                 planetary: {
                     target: "Jupiter",
                     optics: 'Refractor 8"',
+                    focalLength: "1000mm",
                     apertureRatio: "F4",
                     filter: "Light Pollution Cut",
                     camera: "CCD",
                     exposures: "5x30s",
                     filetype: "xisf",
-                    author: "Astrobrot"
+                    author: "Astrobrot",
                 },
                 "deep-sky": {
                     target: "M31",
                     optics: 'Dobsonian 14"',
+                    focalLength: "4000mm",
                     apertureRatio: "F8",
                     filter: "Luminance",
                     camera: "CCD",
                     exposures: "10x60s",
                     filetype: "png",
-                    author: "Astrobrot"
+                    author: "Astrobrot",
                 },
             };
 
@@ -847,6 +891,7 @@
             const elements = {
                 target: document.getElementById("target"),
                 optics: document.getElementById("optics"),
+                focalLength: document.getElementById("focalLength"),
                 apertureRatio: document.getElementById("apertureRatio"),
                 filter: document.getElementById("filter"),
                 camera: document.getElementById("camera"),
@@ -869,6 +914,8 @@
                 darkModeToggle: document.getElementById("darkModeToggle"),
                 notification: document.getElementById("notification"),
                 opticsSelect: document.getElementById("optics-select"),
+                focalLengthSelect:
+                    document.getElementById("focalLength-select"),
                 filterSelect: document.getElementById("filter-select"),
                 cameraSelect: document.getElementById("camera-select"),
                 apertureRatioSelect: document.getElementById(
@@ -893,12 +940,19 @@
 
             // Initialize dropdowns
             function initDropdowns() {
-                // Create options for optics, apertureRatio, filter and camera dropdowns
+                // Create options for optics, focalLength, apertureRatio, filter and camera dropdowns
                 OPTIONS.optics.forEach((option) => {
                     const optionElement = document.createElement("option");
                     optionElement.value = option;
                     optionElement.textContent = option;
                     elements.opticsSelect.appendChild(optionElement);
+                });
+
+                OPTIONS.focalLength.forEach((option) => {
+                    const optionElement = document.createElement("option");
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    elements.focalLengthSelect.appendChild(optionElement);
                 });
 
                 OPTIONS.apertureRatio.forEach((option) => {
@@ -936,6 +990,14 @@
                     updateResults();
                 });
 
+                elements.focalLengthSelect.addEventListener(
+                    "change",
+                    function () {
+                        elements.focalLength.value = this.value;
+                        updateResults();
+                    },
+                );
+
                 elements.apertureRatioSelect.addEventListener(
                     "change",
                     function () {
@@ -959,7 +1021,7 @@
                     updateResults();
                 });
 
-                // Set up event listeners for manual input fields
+                // Set up event listeners for manual input fields with immediate updates
                 elements.optics.addEventListener("input", function () {
                     // Update dropdown to match manual input (if it's a valid option)
                     const selectedOption = OPTIONS.optics.find(
@@ -970,6 +1032,20 @@
                     } else {
                         // If not found, set to empty (no selection)
                         elements.opticsSelect.value = "";
+                    }
+                    updateResults();
+                });
+
+                elements.focalLength.addEventListener("input", function () {
+                    // Update dropdown to match manual input (if it's a valid option)
+                    const selectedOption = OPTIONS.focalLength.find(
+                        (opt) => opt === this.value,
+                    );
+                    if (selectedOption) {
+                        elements.focalLengthSelect.value = selectedOption;
+                    } else {
+                        // If not found, set to empty (no selection)
+                        elements.focalLengthSelect.value = "";
                     }
                     updateResults();
                 });
@@ -1025,6 +1101,17 @@
                     }
                     updateResults();
                 });
+
+                // Add immediate update for target field (the bug fix)
+                elements.target.addEventListener("input", function () {
+                    updateResults();
+                });
+
+                // Add immediate update for other fields
+                elements.exposures.addEventListener("input", updateResults);
+                elements.date.addEventListener("input", updateResults);
+                elements.time.addEventListener("input", updateResults);
+                elements.processing.addEventListener("input", updateResults);
             }
 
             // Generate filename based on selected fields
@@ -1032,6 +1119,7 @@
                 const fields = [
                     { key: "target", label: "Target" },
                     { key: "optics", label: "Optics" },
+                    { key: "focalLength", label: "Focal Length" },
                     { key: "apertureRatio", label: "Aperture Ratio" },
                     { key: "filter", label: "Filter" },
                     { key: "camera", label: "Camera" },
@@ -1072,6 +1160,7 @@
                 const fields = [
                     { key: "target", label: "Target" },
                     { key: "optics", label: "Optics" },
+                    { key: "focalLength", label: "Focal Length" },
                     { key: "apertureRatio", label: "Aperture Ratio" },
                     { key: "filter", label: "Filter" },
                     { key: "camera", label: "Camera" },
@@ -1079,7 +1168,7 @@
                     { key: "date", label: "Date" },
                     { key: "time", label: "Time" },
                     { key: "processing", label: "Processing" },
-                    { key: "author", label: "Author" }
+                    { key: "author", label: "Author" },
                 ];
 
                 const separator = elements.titleSeparator.value || "-";
@@ -1143,6 +1232,21 @@
                                 elements.opticsSelect.value = "";
                             }
                         } else if (
+                            key === "focalLength" &&
+                            elements.focalLength
+                        ) {
+                            elements.focalLength.value = preset[key];
+                            // Update corresponding dropdown
+                            const selectedOption = OPTIONS.focalLength.find(
+                                (opt) => opt === preset[key],
+                            );
+                            if (selectedOption) {
+                                elements.focalLengthSelect.value =
+                                    selectedOption;
+                            } else {
+                                elements.focalLengthSelect.value = "";
+                            }
+                        } else if (
                             key === "apertureRatio" &&
                             elements.apertureRatio
                         ) {
@@ -1192,7 +1296,10 @@
                             } else {
                                 elements.authorSelect.value = "";
                             }
-                        } else if (key === "processing" && elements.processing) {
+                        } else if (
+                            key === "processing" &&
+                            elements.processing
+                        ) {
                             elements.processing.value = preset[key];
                         }
                     });
@@ -1209,6 +1316,7 @@
                         value: ["M31", "Jupiter", "Sun", "Andromeda", "Saturn"],
                     },
                     { key: "optics", value: OPTIONS.optics },
+                    { key: "focalLength", value: OPTIONS.focalLength },
                     { key: "apertureRatio", value: OPTIONS.apertureRatio },
                     { key: "filter", value: OPTIONS.filter },
                     { key: "camera", value: OPTIONS.camera },
@@ -1222,8 +1330,8 @@
                     },
                     {
                         key: "author",
-                        value: OPTIONS.author
-                    }
+                        value: OPTIONS.author,
+                    },
                 ];
 
                 fields.forEach((field) => {
@@ -1245,6 +1353,17 @@
                             elements.opticsSelect.value = selectedOption;
                         } else {
                             elements.opticsSelect.value = "";
+                        }
+                    } else if (field.key === "focalLength") {
+                        elements.focalLength.value = randomValue;
+                        // Update dropdown
+                        const selectedOption = OPTIONS.focalLength.find(
+                            (opt) => opt === randomValue,
+                        );
+                        if (selectedOption) {
+                            elements.focalLengthSelect.value = selectedOption;
+                        } else {
+                            elements.focalLengthSelect.value = "";
                         }
                     } else if (field.key === "apertureRatio") {
                         elements.apertureRatio.value = randomValue;
@@ -1422,6 +1541,8 @@
                 // Clear existing options
                 elements.opticsSelect.innerHTML =
                     '<option value="">Select Optics</option>';
+                elements.focalLengthSelect.innerHTML =
+                    '<option value="">Select Focal Length</option>';
                 elements.apertureRatioSelect.innerHTML =
                     '<option value="">Select Aperture</option>';
                 elements.filterSelect.innerHTML =
@@ -1437,6 +1558,13 @@
                     option.value = opt;
                     option.textContent = opt;
                     elements.opticsSelect.appendChild(option);
+                });
+
+                OPTIONS.focalLength.forEach((opt) => {
+                    const option = document.createElement("option");
+                    option.value = opt;
+                    option.textContent = opt;
+                    elements.focalLengthSelect.appendChild(option);
                 });
 
                 OPTIONS.apertureRatio.forEach((opt) => {
