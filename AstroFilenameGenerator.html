@@ -506,7 +506,7 @@
     </head>
     <body>
         <div class="container">
-            <h1>Astro Filename Generator</h1>
+            <h1>Astro Filename & Title Generator</h1>
 
             <!-- Presets -->
             <div class="presets" id="presetButtons">
@@ -522,6 +522,7 @@
                 </button>
                 <button id="shuffleBtn" class="preset-btn">Shuffle</button>
                 <button id="configBtn" class="preset-btn">Configuration</button>
+                <button id="cleanBtn" class="preset-btn">Clean</button>
             </div>
 
             <!-- Input Fields -->
@@ -923,6 +924,7 @@
                 ),
                 authorSelect: document.getElementById("author-select"),
                 configBtn: document.getElementById("configBtn"),
+                cleanBtn: document.getElementById("cleanBtn"),
                 configModal: document.getElementById("configModal"),
                 saveConfigBtn: document.getElementById("saveConfigBtn"),
                 loadConfigInput: document.getElementById("loadConfigInput"),
@@ -1085,6 +1087,24 @@
                     } else {
                         elements.cameraSelect.value = "";
                     }
+                    updateResults();
+                });
+
+                // Clean button
+                elements.cleanBtn.addEventListener("click", function () {
+                    // Clear all input fields and selects (except filetype and titleSeparator)
+                    document.querySelectorAll("input, select").forEach((el) => {
+                        if (
+                            el.id !== "filetype" &&
+                            el.id !== "titleSeparator"
+                        ) {
+                            el.value = "";
+                        }
+                    });
+
+                    // Clear the calendar date if set
+                    selectedDate = null;
+
                     updateResults();
                 });
 
@@ -1604,7 +1624,9 @@
                 presetButtons.forEach((btn) => {
                     if (
                         !btn.id ||
-                        (btn.id !== "shuffleBtn" && btn.id !== "configBtn")
+                        (btn.id !== "shuffleBtn" &&
+                            btn.id !== "configBtn" &&
+                            btn.id !== "cleanBtn")
                     ) {
                         elements.presetButtons.removeChild(btn);
                     }
