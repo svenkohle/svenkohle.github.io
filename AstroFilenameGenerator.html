@@ -107,11 +107,13 @@
                 display: flex;
                 align-items: center;
                 gap: 10px;
+                margin-bottom: 5px; /* Added to create better spacing */
             }
 
             .field-label {
-                min-width: 100px;
+                min-width: 120px; /* Increased width for better alignment */
                 font-weight: bold;
+                flex-shrink: 0; /* Prevents label from shrinking */
             }
 
             .field-input-container {
@@ -137,6 +139,7 @@
                 background-color: var(--input-bg);
                 color: var(--text-color);
                 flex: 0;
+                min-width: 150px; /* Fixed width for dropdowns */
             }
 
             .options-container {
@@ -281,21 +284,24 @@
                 transform: translateX(26px);
             }
 
-            .help-btn {
-                display: block;
-                margin: 20px auto;
-                padding: 10px 20px;
+            .help-btn,
+            .config-btn {
+                padding: 10px 20px; /* Same padding for both buttons */
                 background-color: var(--button-bg);
                 border: 1px solid var(--border-color);
                 border-radius: 4px;
                 cursor: pointer;
+                min-width: 120px; /* Same minimum width */
+                text-align: center;
             }
 
-            .help-btn:hover {
+            .help-btn:hover,
+            .config-btn:hover {
                 background-color: #e0e0e0;
             }
 
-            .dark-mode .help-btn:hover {
+            .dark-mode .help-btn:hover,
+            .dark-mode .config-btn:hover {
                 background-color: #444;
             }
 
@@ -521,7 +527,6 @@
                     Clear All
                 </button>
                 <button id="shuffleBtn" class="preset-btn">Shuffle</button>
-                <button id="configBtn" class="preset-btn">Configuration</button>
                 <button id="cleanBtn" class="preset-btn">Clean</button>
             </div>
 
@@ -736,8 +741,18 @@
                 </label>
             </div>
 
-            <!-- Help Button -->
-            <button class="btn help-btn" id="helpBtn">Help</button>
+            <!-- Help and Configuration Buttons -->
+            <div
+                style="
+                    display: flex;
+                    justify-content: center;
+                    gap: 10px;
+                    margin-top: 20px;
+                "
+            >
+                <button class="help-btn" id="helpBtn">Help</button>
+                <button id="configBtn" class="config-btn">Configuration</button>
+            </div>
         </div>
 
         <div class="notification" id="notification"></div>
