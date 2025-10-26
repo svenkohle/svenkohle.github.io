@@ -1445,6 +1445,23 @@
             // Toggle dark mode
             function toggleDarkMode() {
                 document.body.classList.toggle("dark-mode");
+
+                // Save dark mode state to localStorage
+                localStorage.setItem(
+                    "darkMode",
+                    elements.darkModeToggle.checked,
+                );
+            }
+
+            // Apply dark mode from saved state
+            function applyDarkModeFromStorage() {
+                const darkModeEnabled =
+                    localStorage.getItem("darkMode") === "true";
+                elements.darkModeToggle.checked = darkModeEnabled;
+
+                if (darkModeEnabled) {
+                    document.body.classList.add("dark-mode");
+                }
             }
 
             // Show help modal
@@ -1472,6 +1489,7 @@
                 const config = {
                     presets: PRESETS,
                     options: OPTIONS,
+                    darkMode: elements.darkModeToggle.checked,
                 };
 
                 const dataStr = JSON.stringify(config, null, 2);
@@ -1507,6 +1525,16 @@
 
                         if (config.options) {
                             Object.assign(OPTIONS, config.options);
+                        }
+
+                        // Apply dark mode setting if present
+                        if (config.darkMode !== undefined) {
+                            elements.darkModeToggle.checked = config.darkMode;
+                            if (config.darkMode) {
+                                document.body.classList.add("dark-mode");
+                            } else {
+                                document.body.classList.remove("dark-mode");
+                            }
                         }
 
                         // Update dropdowns
@@ -1835,6 +1863,9 @@
                     "change",
                     toggleDarkMode,
                 );
+
+                // Apply saved dark mode setting
+                applyDarkModeFromStorage();
 
                 // Initial update
                 updateResults();
