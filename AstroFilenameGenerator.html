@@ -516,13 +516,6 @@
 
             <!-- Presets -->
             <div class="presets" id="presetButtons">
-                <button class="preset-btn" data-preset="solar">Solar</button>
-                <button class="preset-btn" data-preset="planetary">
-                    Planetary
-                </button>
-                <button class="preset-btn" data-preset="deep-sky">
-                    Deep Sky
-                </button>
                 <button class="preset-btn" data-preset="clear">
                     Clear All
                 </button>
@@ -867,41 +860,7 @@
                 author: ["Astrobrot", "John Doe", "Jane Smith"],
             };
 
-            const PRESETS = {
-                solar: {
-                    target: "Sun",
-                    optics: "Solar Scope",
-                    focalLength: "2000mm",
-                    apertureRatio: "F2.8",
-                    filter: "Hydrogen Alpha",
-                    camera: "CCD",
-                    exposures: "3x10s",
-                    filetype: "fits",
-                    author: "Astrobrot",
-                },
-                planetary: {
-                    target: "Jupiter",
-                    optics: 'Refractor 8"',
-                    focalLength: "1000mm",
-                    apertureRatio: "F4",
-                    filter: "Light Pollution Cut",
-                    camera: "CCD",
-                    exposures: "5x30s",
-                    filetype: "xisf",
-                    author: "Astrobrot",
-                },
-                "deep-sky": {
-                    target: "M31",
-                    optics: 'Dobsonian 14"',
-                    focalLength: "4000mm",
-                    apertureRatio: "F8",
-                    filter: "Luminance",
-                    camera: "CCD",
-                    exposures: "10x60s",
-                    filetype: "png",
-                    author: "Astrobrot",
-                },
-            };
+            const PRESETS = {};
 
             // DOM Elements
             const elements = {
