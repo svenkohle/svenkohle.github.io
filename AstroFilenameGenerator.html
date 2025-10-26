@@ -349,6 +349,81 @@
                 color: black;
             }
 
+            #configModal {
+                display: none;
+                position: fixed;
+                z-index: 1002;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+
+            .config-modal-content {
+                background-color: var(--bg-color);
+                margin: 15% auto;
+                padding: 20px;
+                border-radius: 8px;
+                width: 80%;
+                max-width: 500px;
+            }
+
+            .config-actions {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 20px;
+            }
+
+            .config-btn {
+                padding: 10px 15px;
+                background-color: var(--button-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .config-btn:hover {
+                background-color: #e0e0e0;
+            }
+
+            .dark-mode .config-btn:hover {
+                background-color: #444;
+            }
+
+            .file-input-wrapper {
+                position: relative;
+                overflow: hidden;
+                display: inline-block;
+            }
+
+            .file-input-wrapper input[type="file"] {
+                position: absolute;
+                left: 0;
+                top: 0;
+                opacity: 0;
+                width: 100%;
+                height: 100%;
+                cursor: pointer;
+            }
+
+            .file-input-label {
+                display: inline-block;
+                padding: 10px 15px;
+                background-color: var(--button-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .file-input-label:hover {
+                background-color: #e0e0e0;
+            }
+
+            .dark-mode .file-input-label:hover {
+                background-color: #444;
+            }
+
             /* Calendar styles */
             .calendar-container {
                 position: absolute;
@@ -413,123 +488,6 @@
                 opacity: 0.5;
             }
 
-            /* Configuration editor styles */
-            .config-editor-container {
-                margin-top: 20px;
-                padding: 15px;
-                background-color: var(--result-bg);
-                border-radius: 8px;
-            }
-
-            .config-editor-container h3 {
-                margin-bottom: 10px;
-            }
-
-            #configEditor {
-                width: 100%;
-                height: 200px;
-                padding: 10px;
-                font-family: monospace;
-                background-color: var(--input-bg);
-                color: var(--text-color);
-                border: 1px solid var(--border-color);
-                border-radius: 4px;
-                resize: vertical;
-            }
-
-            .config-editor-actions {
-                margin-top: 10px;
-                text-align: right;
-            }
-
-            #applyConfigBtn {
-                padding: 10px 20px;
-                background-color: var(--button-bg);
-                border: 1px solid var(--border-color);
-                border-radius: 4px;
-                cursor: pointer;
-            }
-
-            #applyConfigBtn:hover {
-                background-color: #e0e0e0;
-            }
-
-            .dark-mode #applyConfigBtn:hover {
-                background-color: #444;
-            }
-
-            /* Configuration Section Styles */
-            .config-section {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                width: 500px;
-                max-width: 90vw;
-                height: 60vh;
-                max-height: 80vh;
-                background-color: var(--bg-color);
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                padding: 20px;
-                z-index: 1000;
-                display: none;
-                flex-direction: column;
-                overflow: hidden;
-                resize: both;
-                min-width: 400px;
-                min-height: 300px;
-            }
-
-            .config-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 15px;
-                padding-bottom: 10px;
-                border-bottom: 1px solid var(--border-color);
-            }
-
-            .config-close-btn {
-                background: none;
-                border: none;
-                font-size: 28px;
-                cursor: pointer;
-                color: var(--text-color);
-            }
-
-            .config-close-btn:hover {
-                color: #f44336;
-            }
-
-            .config-actions {
-                display: flex;
-                gap: 10px;
-                margin-bottom: 15px;
-                flex-wrap: wrap;
-            }
-
-            .config-editor-container {
-                display: flex;
-                flex-direction: column;
-                flex-grow: 1;
-                overflow: hidden;
-            }
-
-            .config-editor-container h3 {
-                margin-bottom: 10px;
-            }
-
-            #configEditor {
-                flex-grow: 1;
-                resize: vertical;
-                min-height: 200px;
-            }
-
-            .config-editor-actions {
-                margin-top: 10px;
-                text-align: right;
-            }
-
             @media (max-width: 600px) {
                 .field-row {
                     flex-direction: column;
@@ -548,14 +506,6 @@
                 .field-input-container {
                     flex-direction: column;
                     align-items: stretch;
-                }
-
-                .config-section {
-                    top: 10px;
-                    right: 10px;
-                    left: 10px;
-                    height: 80vh;
-                    width: auto;
                 }
             }
         </style>
@@ -805,41 +755,6 @@
             </div>
         </div>
 
-        <!-- Configuration Section (Updated) -->
-        <div id="configSection" class="config-section">
-            <div class="config-header">
-                <h2>Configuration Manager</h2>
-                <button id="closeConfigBtn" class="config-close-btn">
-                    &times;
-                </button>
-            </div>
-
-            <div class="config-actions">
-                <button id="saveConfigBtn" class="config-btn">
-                    Save Configuration
-                </button>
-                <div class="file-input-wrapper">
-                    <span class="file-input-label">Load Configuration</span>
-                    <input type="file" id="loadConfigInput" accept=".json" />
-                </div>
-            </div>
-
-            <div class="config-editor-container">
-                <h3>JSON Configuration Editor</h3>
-                <textarea id="configEditor" class="field-input"></textarea>
-                <div class="config-editor-actions">
-                    <button id="applyConfigBtn" class="config-btn">
-                        Apply Configuration
-                    </button>
-                </div>
-            </div>
-
-            <p style="margin-top: 20px; font-size: 0.9em">
-                <strong>Configuration format:</strong><br />
-                Presets and dropdown options will be saved as JSON.
-            </p>
-        </div>
-
         <div class="notification" id="notification"></div>
 
         <!-- Help Modal -->
@@ -871,6 +786,34 @@
                 <p>
                     To customize presets and dropdown options, edit the
                     configuration at the top of this HTML file.
+                </p>
+            </div>
+        </div>
+
+        <!-- Configuration Modal -->
+        <div id="configModal">
+            <div class="config-modal-content">
+                <span class="close">&times;</span>
+                <h2>Configuration Manager</h2>
+                <p>Save or load your configuration settings:</p>
+
+                <div class="config-actions">
+                    <button id="saveConfigBtn" class="config-btn">
+                        Save Configuration
+                    </button>
+                    <div class="file-input-wrapper">
+                        <span class="file-input-label">Load Configuration</span>
+                        <input
+                            type="file"
+                            id="loadConfigInput"
+                            accept=".json"
+                        />
+                    </div>
+                </div>
+
+                <p style="margin-top: 20px; font-size: 0.9em">
+                    <strong>Configuration format:</strong><br />
+                    Presets and dropdown options will be saved as JSON.
                 </p>
             </div>
         </div>
@@ -997,8 +940,7 @@
                 authorSelect: document.getElementById("author-select"),
                 configBtn: document.getElementById("configBtn"),
                 cleanBtn: document.getElementById("cleanBtn"),
-                configSection: document.getElementById("configSection"),
-                closeConfigBtn: document.getElementById("closeConfigBtn"),
+                configModal: document.getElementById("configModal"),
                 saveConfigBtn: document.getElementById("saveConfigBtn"),
                 loadConfigInput: document.getElementById("loadConfigInput"),
                 calendar: document.getElementById("calendar"),
@@ -1006,8 +948,6 @@
                 nextMonth: document.getElementById("nextMonth"),
                 monthYear: document.querySelector(".calendar-month-year"),
                 presetButtons: document.getElementById("presetButtons"),
-                configEditor: document.getElementById("configEditor"),
-                applyConfigBtn: document.getElementById("applyConfigBtn"),
             };
 
             // Calendar state
@@ -1558,15 +1498,14 @@
                 elements.helpModal.style.display = "none";
             }
 
-            // Show configuration section
+            // Show configuration modal
             function showConfig() {
-                elements.configSection.style.display = "flex";
-                initConfigEditor(); // Initialize editor with current config
+                elements.configModal.style.display = "block";
             }
 
-            // Close configuration section
+            // Close configuration modal
             function closeConfig() {
-                elements.configSection.style.display = "none";
+                elements.configModal.style.display = "none";
             }
 
             // Save configuration to JSON file
@@ -1748,47 +1687,6 @@
                 }, 3000);
             }
 
-            // Initialize configuration editor with current config
-            function initConfigEditor() {
-                const config = {
-                    presets: PRESETS,
-                    options: OPTIONS,
-                };
-
-                elements.configEditor.value = JSON.stringify(config, null, 2);
-            }
-
-            // Apply configuration from editor
-            function applyConfigFromEditor() {
-                try {
-                    const config = JSON.parse(elements.configEditor.value);
-
-                    // Update presets and options
-                    if (config.presets) {
-                        Object.assign(PRESETS, config.presets);
-                    }
-
-                    if (config.options) {
-                        Object.assign(OPTIONS, config.options);
-                    }
-
-                    // Update dropdowns
-                    updateDropdowns();
-
-                    // Refresh preset buttons
-                    refreshPresetButtons();
-
-                    // Close config section
-                    closeConfig();
-
-                    // Show notification
-                    showNotification("Configuration applied successfully!");
-                } catch (error) {
-                    console.error("Error parsing config:", error);
-                    showNotification("Invalid JSON configuration!", true);
-                }
-            }
-
             // Initialize calendar
             function initCalendar() {
                 updateCalendar();
@@ -1953,32 +1851,24 @@
                 elements.helpBtn.addEventListener("click", showHelp);
                 elements.closeModal.addEventListener("click", closeHelp);
 
-                // Configuration button (updated)
+                // Configuration button
                 elements.configBtn.addEventListener("click", showConfig);
-                elements.closeConfigBtn.addEventListener("click", closeConfig);
-
-                // Apply configuration button
-                elements.applyConfigBtn.addEventListener(
-                    "click",
-                    applyConfigFromEditor,
-                );
-
-                // Save configuration button
                 elements.saveConfigBtn.addEventListener("click", saveConfig);
-
-                // Load configuration button
                 elements.loadConfigInput.addEventListener("change", loadConfig);
 
-                // Close modals when clicking outside (for help)
+                // Close modals when clicking outside
                 window.addEventListener("click", (event) => {
                     if (event.target === elements.helpModal) {
                         closeHelp();
                     }
+                    if (event.target === elements.configModal) {
+                        closeConfig();
+                    }
                 });
 
-                // Add event listener for the X button in config section
+                // Add event listener for the X button in config modal
                 document
-                    .querySelector("#configSection .close")
+                    .querySelector("#configModal .close")
                     .addEventListener("click", closeConfig);
 
                 // Dark mode toggle
