@@ -672,8 +672,9 @@
                     <label class="field-label">Title Sep:</label>
                     <div class="field-input-container">
                         <select id="titleSeparator" class="field-select">
-                            <option value="-">Hyphen (-)</option>
-                            <option value="|">Pipe (|)</option>
+                            <option value=" - ">Hyphen (-)</option>
+                            <option value=" | ">Pipe (|)</option>
+                            <option value=", ">Comma (,)</option>
                         </select>
                     </div>
                 </div>
@@ -1179,7 +1180,7 @@
                         if (title === "") {
                             title = cleanValue;
                         } else {
-                            title += ` ${separator} ${cleanValue}`;
+                            title += `${separator}${cleanValue}`;
                         }
                     }
                 });
