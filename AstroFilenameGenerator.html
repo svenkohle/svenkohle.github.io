@@ -812,56 +812,103 @@
             </div>
         </div>
 
+        <!------------------------------------------------------------
+        Configuration of Presets, Dropdown Options, and Other Settings
+        Copy configuration from your JSON file into:
+        const EMBEDDED_CONFIG = <PASTE CONTENT OF YOUR CONFIG>
+        ------------------------------------------------------------->
         <script>
-            // Configuration
-            const OPTIONS = {
-                optics: [
-                    'Reflector 8"',
-                    'Refractor 10"',
-                    'Dobsonian 14"',
-                    'Reflector 12"',
-                    'Refractor 8"',
-                    "Solar Scope",
-                ],
-                focalLength: [
-                    "1000mm",
-                    "2000mm",
-                    "4000mm",
-                    "8000mm",
-                    "13000mm",
-                ],
-                apertureRatio: [
-                    "F1.4",
-                    "F2",
-                    "F2.8",
-                    "F3.5",
-                    "F4",
-                    "F5.6",
-                    "F8",
-                    "F11",
-                ],
-                filter: [
-                    "Luminance",
-                    "Red",
-                    "Green",
-                    "Blue",
-                    "Ha",
-                    "O3",
-                    "SII",
-                    "Light Pollution Cut",
-                ],
-                camera: [
-                    "DSLR",
-                    "CCD",
-                    "CMOS",
-                    "SBIG STL",
-                    "ASI1600MM",
-                    "ZWO ASI294MC",
-                ],
-                author: ["Astrobrot", "John Doe", "Jane Smith"],
+            // Embedded Configuration - Now matches JSON format
+            const EMBEDDED_CONFIG = {
+                presets: {
+                    solar: {
+                        target: "Sun",
+                        optics: "Solar Scope",
+                        focalLength: "1000mm",
+                        apertureRatio: "F2.8",
+                        filter: "Luminance",
+                        camera: "CCD",
+                        exposures: "1x60s",
+                        processing: "PI+RC+LR",
+                        author: "Astrobrot",
+                    },
+                    planetary: {
+                        target: "Jupiter",
+                        optics: 'Refractor 10"',
+                        focalLength: "2000mm",
+                        apertureRatio: "F5.6",
+                        filter: "Luminance",
+                        camera: "CCD",
+                        exposures: "5x30s",
+                        processing: "PI+DR",
+                        author: "Astrobrot",
+                    },
+                    deepsky: {
+                        target: "M31",
+                        optics: 'Reflector 8"',
+                        focalLength: "4000mm",
+                        apertureRatio: "F4",
+                        filter: "Ha",
+                        camera: "CCD",
+                        exposures: "10x60s",
+                        processing: "PI+STF",
+                        author: "Astrobrot",
+                    },
+                },
+                options: {
+                    optics: [
+                        'Reflector 8"',
+                        'Refractor 10"',
+                        'Dobsonian 14"',
+                        'Reflector 12"',
+                        'Refractor 8"',
+                        "Solar Scope",
+                    ],
+                    focalLength: [
+                        "1000mm",
+                        "2000mm",
+                        "4000mm",
+                        "8000mm",
+                        "13000mm",
+                    ],
+                    apertureRatio: [
+                        "F1.4",
+                        "F2",
+                        "F2.8",
+                        "F3.5",
+                        "F4",
+                        "F5.6",
+                        "F8",
+                        "F11",
+                    ],
+                    filter: [
+                        "Luminance",
+                        "Red",
+                        "Green",
+                        "Blue",
+                        "Ha",
+                        "O3",
+                        "SII",
+                        "Light Pollution Cut",
+                    ],
+                    camera: [
+                        "DSLR",
+                        "CCD",
+                        "CMOS",
+                        "SBIG STL",
+                        "ASI1600MM",
+                        "ZWO ASI294MC",
+                    ],
+                    author: ["Astrobrot", "John Doe", "Jane Smith"],
+                },
+                darkMode: false,
             };
 
-            const PRESETS = {};
+            // ********************************************************************
+
+            // Configuration - This now uses the embedded config as default
+            const OPTIONS = EMBEDDED_CONFIG.options;
+            const PRESETS = EMBEDDED_CONFIG.presets;
 
             // DOM Elements
             const elements = {
