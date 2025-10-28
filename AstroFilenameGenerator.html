@@ -901,7 +901,7 @@
                     ],
                     author: ["Astrobrot", "John Doe", "Jane Smith"],
                 },
-                darkMode: false,
+                darkMode: true,
             };
 
             // ********************************************************************
@@ -1512,6 +1512,24 @@
                 }
             }
 
+            // Initialize dark mode based on embedded configuration
+            function initializeDarkMode() {
+                const initialDarkMode = EMBEDDED_CONFIG.darkMode || false;
+
+                // Set the toggle state
+                elements.darkModeToggle.checked = initialDarkMode;
+
+                // Apply dark mode class if needed
+                if (initialDarkMode) {
+                    document.body.classList.add("dark-mode");
+                } else {
+                    document.body.classList.remove("dark-mode");
+                }
+
+                // Save to localStorage for persistence
+                localStorage.setItem("darkMode", initialDarkMode);
+            }
+
             // Show help modal
             function showHelp() {
                 elements.helpModal.style.display = "block";
@@ -1848,6 +1866,9 @@
 
             // Initialize the application
             function init() {
+                // Initialize dark mode based on embedded configuration
+                initializeDarkMode();
+
                 initDropdowns();
                 initCalendar();
 
