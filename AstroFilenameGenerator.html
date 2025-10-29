@@ -543,6 +543,16 @@
                 </div>
 
                 <div class="field-row">
+                    <label class="field-label">Corrector:</label>
+                    <div class="field-input-container">
+                        <input type="text" id="corrector" class="field-input" />
+                        <select id="corrector-select" class="field-select">
+                            <option value="">Select Corrector</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field-row">
                     <label class="field-label">Focal Length:</label>
                     <div class="field-input-container">
                         <input
@@ -824,6 +834,7 @@
                     solar: {
                         target: "Sun",
                         optics: "Solar Scope",
+                        corrector: "0.7x",
                         focalLength: "1000mm",
                         apertureRatio: "F2.8",
                         filter: "Luminance",
@@ -835,6 +846,7 @@
                     planetary: {
                         target: "Jupiter",
                         optics: 'Refractor 10"',
+                        corrector: "1.0x",
                         focalLength: "2000mm",
                         apertureRatio: "F5.6",
                         filter: "Luminance",
@@ -846,6 +858,7 @@
                     deepsky: {
                         target: "M31",
                         optics: 'Reflector 8"',
+                        corrector: "2x",
                         focalLength: "4000mm",
                         apertureRatio: "F4",
                         filter: "Ha",
@@ -864,6 +877,7 @@
                         'Refractor 8"',
                         "Solar Scope",
                     ],
+                    corrector: ["0.7x", "1.0x", "2x"],
                     focalLength: [
                         "1000mm",
                         "2000mm",
@@ -914,6 +928,7 @@
             const elements = {
                 target: document.getElementById("target"),
                 optics: document.getElementById("optics"),
+                corrector: document.getElementById("corrector"),
                 focalLength: document.getElementById("focalLength"),
                 apertureRatio: document.getElementById("apertureRatio"),
                 filter: document.getElementById("filter"),
@@ -937,6 +952,7 @@
                 darkModeToggle: document.getElementById("darkModeToggle"),
                 notification: document.getElementById("notification"),
                 opticsSelect: document.getElementById("optics-select"),
+                correctorSelect: document.getElementById("corrector-select"),
                 focalLengthSelect:
                     document.getElementById("focalLength-select"),
                 filterSelect: document.getElementById("filter-select"),
@@ -962,14 +978,27 @@
             let currentYear = new Date().getFullYear();
             let selectedDate = null;
 
+            // Track button states to prevent spamming
+            const copyButtonStates = {
+                filename: false,
+                title: false,
+            };
+
             // Initialize dropdowns
             function initDropdowns() {
-                // Create options for optics, focalLength, apertureRatio, filter and camera dropdowns
+                // Create options for optics, corrector, focalLength, apertureRatio, filter and camera dropdowns
                 OPTIONS.optics.forEach((option) => {
                     const optionElement = document.createElement("option");
                     optionElement.value = option;
                     optionElement.textContent = option;
                     elements.opticsSelect.appendChild(optionElement);
+                });
+
+                OPTIONS.corrector.forEach((option) => {
+                    const optionElement = document.createElement("option");
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    elements.correctorSelect.appendChild(optionElement);
                 });
 
                 OPTIONS.focalLength.forEach((option) => {
@@ -1014,6 +1043,14 @@
                     updateResults();
                 });
 
+                elements.correctorSelect.addEventListener(
+                    "change",
+                    function () {
+                        elements.corrector.value = this.value;
+                        updateResults();
+                    },
+                );
+
                 elements.focalLengthSelect.addEventListener(
                     "change",
                     function () {
@@ -1056,6 +1093,20 @@
                     } else {
                         // If not found, set to empty (no selection)
                         elements.opticsSelect.value = "";
+                    }
+                    updateResults();
+                });
+
+                elements.corrector.addEventListener("input", function () {
+                    // Update dropdown to match manual input (if it's a valid option)
+                    const selectedOption = OPTIONS.corrector.find(
+                        (opt) => opt === this.value,
+                    );
+                    if (selectedOption) {
+                        elements.correctorSelect.value = selectedOption;
+                    } else {
+                        // If not found, set to empty (no selection)
+                        elements.correctorSelect.value = "";
                     }
                     updateResults();
                 });
@@ -1161,6 +1212,7 @@
                 const fields = [
                     { key: "target", label: "Target" },
                     { key: "optics", label: "Optics" },
+                    { key: "corrector", label: "Corrector" },
                     { key: "focalLength", label: "Focal Length" },
                     { key: "apertureRatio", label: "Aperture Ratio" },
                     { key: "filter", label: "Filter" },
@@ -1202,6 +1254,7 @@
                 const fields = [
                     { key: "target", label: "Target" },
                     { key: "optics", label: "Optics" },
+                    { key: "corrector", label: "Corrector" },
                     { key: "focalLength", label: "Focal Length" },
                     { key: "apertureRatio", label: "Aperture Ratio" },
                     { key: "filter", label: "Filter" },
@@ -1272,6 +1325,17 @@
                                 elements.opticsSelect.value = selectedOption;
                             } else {
                                 elements.opticsSelect.value = "";
+                            }
+                        } else if (key === "corrector" && elements.corrector) {
+                            elements.corrector.value = preset[key];
+                            // Update corresponding dropdown
+                            const selectedOption = OPTIONS.corrector.find(
+                                (opt) => opt === preset[key],
+                            );
+                            if (selectedOption) {
+                                elements.correctorSelect.value = selectedOption;
+                            } else {
+                                elements.correctorSelect.value = "";
                             }
                         } else if (
                             key === "focalLength" &&
@@ -1358,6 +1422,7 @@
                         value: ["M31", "Jupiter", "Sun", "Andromeda", "Saturn"],
                     },
                     { key: "optics", value: OPTIONS.optics },
+                    { key: "corrector", value: OPTIONS.corrector },
                     { key: "focalLength", value: OPTIONS.focalLength },
                     { key: "apertureRatio", value: OPTIONS.apertureRatio },
                     { key: "filter", value: OPTIONS.filter },
@@ -1395,6 +1460,17 @@
                             elements.opticsSelect.value = selectedOption;
                         } else {
                             elements.opticsSelect.value = "";
+                        }
+                    } else if (field.key === "corrector") {
+                        elements.corrector.value = randomValue;
+                        // Update dropdown
+                        const selectedOption = OPTIONS.corrector.find(
+                            (opt) => opt === randomValue,
+                        );
+                        if (selectedOption) {
+                            elements.correctorSelect.value = selectedOption;
+                        } else {
+                            elements.correctorSelect.value = "";
                         }
                     } else if (field.key === "focalLength") {
                         elements.focalLength.value = randomValue;
@@ -1468,16 +1544,37 @@
                 updateResults();
             }
 
-            // Copy to clipboard
+            // Copy to clipboard with proper feedback
             function copyToClipboard(text, element) {
-                navigator.clipboard.writeText(text).then(() => {
-                    const originalText = element.textContent;
-                    element.textContent = "Copied!";
+                // Prevent multiple rapid clicks
+                if (copyButtonStates[element.id] === true) return;
 
-                    setTimeout(() => {
-                        element.textContent = originalText;
-                    }, 2000);
-                });
+                // Set button state to prevent spamming
+                copyButtonStates[element.id] = true;
+
+                // Save original text
+                const originalText = element.textContent;
+
+                // Show "Copied!" feedback immediately
+                element.textContent = "Copied!";
+
+                navigator.clipboard
+                    .writeText(text)
+                    .then(() => {
+                        // Reset button after 2 seconds
+                        setTimeout(() => {
+                            element.textContent = originalText;
+                            copyButtonStates[element.id] = false;
+                        }, 2000);
+                    })
+                    .catch((err) => {
+                        console.error("Failed to copy: ", err);
+                        // Reset button even on error
+                        setTimeout(() => {
+                            element.textContent = originalText;
+                            copyButtonStates[element.id] = false;
+                        }, 2000);
+                    });
             }
 
             // Set today's date
@@ -1629,6 +1726,8 @@
                 // Clear existing options
                 elements.opticsSelect.innerHTML =
                     '<option value="">Select Optics</option>';
+                elements.correctorSelect.innerHTML =
+                    '<option value="">Select Corrector</option>';
                 elements.focalLengthSelect.innerHTML =
                     '<option value="">Select Focal Length</option>';
                 elements.apertureRatioSelect.innerHTML =
@@ -1646,6 +1745,13 @@
                     option.value = opt;
                     option.textContent = opt;
                     elements.opticsSelect.appendChild(option);
+                });
+
+                OPTIONS.corrector.forEach((opt) => {
+                    const option = document.createElement("option");
+                    option.value = opt;
+                    option.textContent = opt;
+                    elements.correctorSelect.appendChild(option);
                 });
 
                 OPTIONS.focalLength.forEach((opt) => {
@@ -1888,7 +1994,7 @@
                 // Shuffle button
                 elements.shuffleBtn.addEventListener("click", shufflePreset);
 
-                // Copy buttons
+                // Copy buttons - FIXED to maintain functionality
                 elements.copyFilename.addEventListener("click", () => {
                     copyToClipboard(
                         elements.filenameResult.textContent,
