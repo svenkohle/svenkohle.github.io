@@ -1,0 +1,2339 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Astro Filename Generator</title>
+        <style>
+            /* All existing styles remain unchanged */
+            :root {
+                --bg-color: #ffffff;
+                --text-color: #333333;
+                --border-color: #cccccc;
+                --button-bg: #f0f0f0;
+                --input-bg: #ffffff;
+                --result-bg: #f8f8f8;
+                --button-text-color: #333333; /* Default text color for buttons */
+            }
+
+            .dark-mode {
+                --bg-color: #1a1a1a;
+                --text-color: #ffffff;
+                --border-color: #444444;
+                --button-bg: #333333;
+                --input-bg: #2d2d2d;
+                --result-bg: #252525;
+                --button-text-color: #ffffff; /* Brighter text color for buttons in dark mode */
+            }
+
+            /* Apply the button text color to all buttons including preset buttons */
+            .preset-btn,
+            .option-btn,
+            .date-btn,
+            .copy-btn,
+            .help-btn,
+            .config-btn,
+            .toggle-switch input + .slider,
+            .file-input-label {
+                color: var(--button-text-color);
+            }
+
+            /* Ensure dropdowns and other inputs also have proper text visibility */
+            .field-input,
+            .field-select {
+                color: var(--text-color);
+            }
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                background-color: var(--bg-color);
+                color: var(--text-color);
+                padding: 20px;
+                line-height: 1.6;
+            }
+
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+            }
+
+            h1 {
+                text-align: center;
+                margin-bottom: 20px;
+                color: var(--text-color);
+            }
+
+            .presets {
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+                margin-bottom: 20px;
+                flex-wrap: wrap;
+            }
+
+            .preset-btn {
+                padding: 8px 15px;
+                background-color: var(--button-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .preset-btn:hover {
+                background-color: #e0e0e0;
+            }
+
+            .dark-mode .preset-btn:hover {
+                background-color: #444;
+            }
+
+            .field-group {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-bottom: 20px;
+                padding: 15px;
+                border-radius: 8px;
+                background-color: var(--result-bg);
+            }
+
+            .field-row {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 5px; /* Added to create better spacing */
+            }
+
+            .field-label {
+                min-width: 120px; /* Increased width for better alignment */
+                font-weight: bold;
+                flex-shrink: 0; /* Prevents label from shrinking */
+            }
+
+            .field-input-container {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex: 1;
+            }
+
+            .field-input {
+                padding: 8px;
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                background-color: var(--input-bg);
+                color: var(--text-color);
+                flex: 1;
+            }
+
+            .field-select {
+                padding: 8px;
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                background-color: var(--input-bg);
+                color: var(--text-color);
+                flex: 0;
+                min-width: 150px; /* Fixed width for dropdowns */
+            }
+
+            .options-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-top: 5px;
+            }
+
+            .option-btn {
+                padding: 4px 10px;
+                background-color: var(--button-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 0.9em;
+            }
+
+            .option-btn:hover {
+                background-color: #e0e0e0;
+            }
+
+            .dark-mode .option-btn:hover {
+                background-color: #444;
+            }
+
+            .date-controls {
+                display: flex;
+                gap: 10px;
+            }
+
+            .date-btn {
+                padding: 8px 12px;
+                background-color: var(--button-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .date-btn:hover {
+                background-color: #e0e0e0;
+            }
+
+            .dark-mode .date-btn:hover {
+                background-color: #444;
+            }
+
+            .result-section {
+                margin-bottom: 20px;
+            }
+
+            .section-title {
+                font-size: 1.2em;
+                margin-bottom: 10px;
+            }
+
+            .result-container {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 12px;
+                background-color: var(--result-bg);
+                border-radius: 4px;
+            }
+
+            .result-text {
+                flex: 1;
+                word-break: break-all;
+                font-family: monospace;
+            }
+
+            .copy-btn {
+                padding: 8px 15px;
+                background-color: var(--button-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .copy-btn:hover {
+                background-color: #e0e0e0;
+            }
+
+            .dark-mode .copy-btn:hover {
+                background-color: #444;
+            }
+
+            .toggle-dark-mode {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+
+            .toggle-label {
+                font-weight: bold;
+            }
+
+            .toggle-switch {
+                position: relative;
+                display: inline-block;
+                width: 50px;
+                height: 24px;
+            }
+
+            .toggle-switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+            .slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                transition: 0.4s;
+                border-radius: 24px;
+            }
+
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 16px;
+                width: 16px;
+                left: 4px;
+                bottom: 4px;
+                background-color: white;
+                transition: 0.4s;
+                border-radius: 50%;
+            }
+
+            input:checked + .slider {
+                background-color: #2196f3;
+            }
+
+            input:checked + .slider:before {
+                transform: translateX(26px);
+            }
+
+            .help-btn,
+            .config-btn {
+                padding: 10px 20px; /* Same padding for both buttons */
+                background-color: var(--button-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                cursor: pointer;
+                min-width: 120px; /* Same minimum width */
+                text-align: center;
+            }
+
+            .help-btn:hover,
+            .config-btn:hover {
+                background-color: #e0e0e0;
+            }
+
+            .dark-mode .help-btn:hover,
+            .dark-mode .config-btn:hover {
+                background-color: #444;
+            }
+
+            .notification {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 10px 20px;
+                background-color: #4caf50;
+                color: white;
+                border-radius: 4px;
+                z-index: 1000;
+                display: none;
+            }
+
+            #helpModal {
+                display: none;
+                position: fixed;
+                z-index: 1001;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+
+            .modal-content {
+                background-color: var(--bg-color);
+                margin: 15% auto;
+                padding: 20px;
+                border-radius: 8px;
+                width: 80%;
+                max-width: 500px;
+            }
+
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            .close:hover {
+                color: black;
+            }
+
+            #configModal {
+                display: none;
+                position: fixed;
+                z-index: 1002;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                width: 80%;
+                max-width: 500px;
+            }
+
+            .config-modal-content {
+                background-color: var(--bg-color);
+                padding: 20px;
+                border-radius: 8px;
+                width: 100%;
+            }
+
+            .config-modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+                cursor: move;
+                padding-bottom: 10px;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .config-modal-title {
+                margin: 0;
+                font-size: 1.2em;
+            }
+
+            .config-actions {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 20px;
+            }
+
+            .config-btn {
+                padding: 10px 15px;
+                background-color: var(--button-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .config-btn:hover {
+                background-color: #e0e0e0;
+            }
+
+            .dark-mode .config-btn:hover {
+                background-color: #444;
+            }
+
+            .file-input-wrapper {
+                position: relative;
+                overflow: hidden;
+                display: inline-block;
+            }
+
+            .file-input-wrapper input[type="file"] {
+                position: absolute;
+                left: 0;
+                top: 0;
+                opacity: 0;
+                width: 100%;
+                height: 100%;
+                cursor: pointer;
+            }
+
+            .file-input-label {
+                display: inline-block;
+                padding: 10px 15px;
+                background-color: var(--button-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .file-input-label:hover {
+                background-color: #e0e0e0;
+            }
+
+            .dark-mode .file-input-label:hover {
+                background-color: #444;
+            }
+
+            /* Calendar styles */
+            .calendar-container {
+                position: absolute;
+                z-index: 1003;
+                background-color: var(--bg-color);
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                padding: 20px;
+                width: 300px;
+                display: none;
+            }
+
+            .calendar-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+            }
+
+            .calendar-nav-btn {
+                background-color: var(--button-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                cursor: pointer;
+                padding: 5px 10px;
+            }
+
+            .calendar-month-year {
+                font-weight: bold;
+                font-size: 1.2em;
+            }
+
+            .calendar-grid {
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                gap: 5px;
+                text-align: center;
+            }
+
+            .calendar-day-header {
+                font-weight: bold;
+                padding: 5px 0;
+            }
+
+            .calendar-day {
+                padding: 8px 0;
+                cursor: pointer;
+                border-radius: 4px;
+                transition: background-color 0.2s;
+            }
+
+            .calendar-day:hover {
+                background-color: var(--button-bg);
+            }
+
+            .calendar-day.selected {
+                background-color: #2196f3;
+                color: white;
+            }
+
+            .calendar-day.other-month {
+                opacity: 0.5;
+            }
+
+            /* New styles for parameter selection in config */
+            .config-param-section {
+                margin-bottom: 20px;
+                padding: 15px;
+                border-radius: 8px;
+                background-color: var(--result-bg);
+            }
+
+            .config-param-section h3 {
+                margin-top: 0;
+                margin-bottom: 15px;
+            }
+
+            .param-checkbox-container {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                margin-bottom: 5px;
+            }
+
+            .param-checkbox-container input[type="checkbox"] {
+                margin: 0;
+            }
+
+            @media (max-width: 600px) {
+                .field-row {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                .date-controls {
+                    flex-wrap: wrap;
+                }
+
+                .result-container {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                .field-input-container {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Astro Filename & Title Generator</h1>
+
+            <!-- Presets -->
+            <div class="presets" id="presetButtons">
+                <button class="preset-btn" data-preset="clear">
+                    Clear All
+                </button>
+                <button id="shuffleBtn" class="preset-btn">Shuffle</button>
+                <button id="cleanBtn" class="preset-btn">Clean</button>
+            </div>
+
+            <!-- Input Fields -->
+            <div class="field-group">
+                <div class="field-row">
+                    <label class="field-label">Target:</label>
+                    <div class="field-input-container">
+                        <input type="text" id="target" class="field-input" />
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <label class="field-label">Optics:</label>
+                    <div class="field-input-container">
+                        <input type="text" id="optics" class="field-input" />
+                        <select id="optics-select" class="field-select">
+                            <option value="">Select Optics</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <label class="field-label">Corrector:</label>
+                    <div class="field-input-container">
+                        <input type="text" id="corrector" class="field-input" />
+                        <select id="corrector-select" class="field-select">
+                            <option value="">Select Corrector</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <label class="field-label">Focal Length:</label>
+                    <div class="field-input-container">
+                        <input
+                            type="text"
+                            id="focalLength"
+                            class="field-input"
+                        />
+                        <select id="focalLength-select" class="field-select">
+                            <option value="">Select Focal Length</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <label class="field-label">Aperture Ratio:</label>
+                    <div class="field-input-container">
+                        <input
+                            type="text"
+                            id="apertureRatio"
+                            class="field-input"
+                        />
+                        <select id="apertureRatio-select" class="field-select">
+                            <option value="">Select Aperture</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <label class="field-label">Filter:</label>
+                    <div class="field-input-container">
+                        <input type="text" id="filter" class="field-input" />
+                        <select id="filter-select" class="field-select">
+                            <option value="">Select Filter</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <label class="field-label">Camera:</label>
+                    <div class="field-input-container">
+                        <input type="text" id="camera" class="field-input" />
+                        <select id="camera-select" class="field-select">
+                            <option value="">Select Camera</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <label class="field-label">Exposures:</label>
+                    <div class="field-input-container">
+                        <input type="text" id="exposures" class="field-input" />
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <label class="field-label">Date:</label>
+                    <div class="field-input-container">
+                        <input
+                            type="text"
+                            id="date"
+                            class="field-input"
+                            placeholder="e.g., YYYY-MM-DD"
+                        />
+                        <div class="date-controls">
+                            <!-- Calendar button replaces Today/Yesterday -->
+                            <button id="calendarBtn" class="date-btn">
+                                Calendar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <label class="field-label">Time:</label>
+                    <div class="field-input-container">
+                        <input
+                            type="text"
+                            id="time"
+                            class="field-input"
+                            placeholder="e.g., HH:MM"
+                        />
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <label class="field-label">Processing:</label>
+                    <div class="field-input-container">
+                        <input
+                            type="text"
+                            id="processing"
+                            class="field-input"
+                            placeholder="e.g., PI+RC+LR"
+                        />
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <label class="field-label">Author:</label>
+                    <div class="field-input-container">
+                        <input
+                            type="text"
+                            id="author"
+                            class="field-input"
+                            value="Astrobrot"
+                        />
+                        <select id="author-select" class="field-select">
+                            <option value="">Select Author</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <label class="field-label">Filetype:</label>
+                    <div class="field-input-container">
+                        <select id="filetype" class="field-select">
+                            <option value="fits">FITS</option>
+                            <option value="xisf">XISF</option>
+                            <option value="png">PNG</option>
+                            <option value="tif">TIF</option>
+                            <option value="jpg">JPG</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Title Separator -->
+                <div class="field-row">
+                    <label class="field-label">Title Sep:</label>
+                    <div class="field-input-container">
+                        <select id="titleSeparator" class="field-select">
+                            <option value=" - ">Hyphen (-)</option>
+                            <option value=" | ">Pipe (|)</option>
+                            <option value=", ">Comma (,)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar -->
+            <div id="calendar" class="calendar-container">
+                <div class="calendar-header">
+                    <button id="prevMonth" class="calendar-nav-btn">
+                        &lt;
+                    </button>
+                    <div class="calendar-month-year">Month Year</div>
+                    <button id="nextMonth" class="calendar-nav-btn">
+                        &gt;
+                    </button>
+                </div>
+                <div class="calendar-grid">
+                    <div class="calendar-day-header">Sun</div>
+                    <div class="calendar-day-header">Mon</div>
+                    <div class="calendar-day-header">Tue</div>
+                    <div class="calendar-day-header">Wed</div>
+                    <div class="calendar-day-header">Thu</div>
+                    <div class="calendar-day-header">Fri</div>
+                    <div class="calendar-day-header">Sat</div>
+                    <!-- Calendar days will be generated here -->
+                </div>
+            </div>
+
+            <!-- Result and Title Sections -->
+            <div class="result-section">
+                <h2 class="section-title">Filename</h2>
+                <div class="result-container">
+                    <div id="filename-result" class="result-text">
+                        Generated filename will appear here
+                    </div>
+                    <button id="copy-filename" class="btn copy-btn">
+                        Copy
+                    </button>
+                </div>
+            </div>
+
+            <div class="result-section">
+                <h2 class="section-title">Image Title</h2>
+                <div class="result-container">
+                    <div id="title-result" class="result-text">
+                        Generated title will appear here
+                    </div>
+                    <button id="copy-title" class="btn copy-btn">Copy</button>
+                </div>
+            </div>
+
+            <!-- Toggle Dark Mode -->
+            <div class="toggle-dark-mode">
+                <label class="toggle-label">Dark Mode</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="darkModeToggle" />
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <!-- Help and Configuration Buttons -->
+            <div
+                style="
+                    display: flex;
+                    justify-content: center;
+                    gap: 10px;
+                    margin-top: 20px;
+                "
+            >
+                <button class="help-btn" id="helpBtn">Help</button>
+                <button id="configBtn" class="config-btn">Configuration</button>
+            </div>
+        </div>
+
+        <div class="notification" id="notification"></div>
+
+        <!-- Help Modal -->
+        <div id="helpModal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Help</h2>
+                <p>
+                    This tool generates filenames and image titles for
+                    astronomical imaging based on your inputs.
+                </p>
+                <p>You can:</p>
+                <ul>
+                    <li>
+                        Select from presets for Solar, Planetary, or Deep Sky
+                        imaging
+                    </li>
+                    <li>
+                        Use the "Shuffle" button to generate random settings for
+                        quick testing
+                    </li>
+                    <li>
+                        Copy generated filenames and titles to clipboard with
+                        the buttons
+                    </li>
+                    <li>Toggle between light and dark modes</li>
+                    <li>Use the Calendar button to select any date</li>
+                </ul>
+                <p>
+                    To customize presets and dropdown options, edit the
+                    configuration at the top of this HTML file.
+                </p>
+            </div>
+        </div>
+
+        <!-- Configuration Modal -->
+        <div id="configModal">
+            <div class="config-modal-content">
+                <div class="config-modal-header" id="configModalHeader">
+                    <h2 class="config-modal-title">Configuration Manager</h2>
+                    <span class="close">&times;</span>
+                </div>
+                <p>Save or load your configuration settings:</p>
+
+                <!-- Parameter Selection UI -->
+                <div class="config-param-section">
+                    <h3>Filename Parameters</h3>
+                    <div id="filenameConfigParams"></div>
+                    <div style="margin-top: 10px;">
+                        <button id="selectAllFilenameParams" class="option-btn">Select All</button>
+                        <button id="clearAllFilenameParams" class="option-btn">Clear All</button>
+                    </div>
+                </div>
+
+                <div class="config-param-section">
+                    <h3>Title Parameters</h3>
+                    <div id="titleConfigParams"></div>
+                    <div style="margin-top: 10px;">
+                        <button id="selectAllTitleParams" class="option-btn">Select All</button>
+                        <button id="clearAllTitleParams" class="option-btn">Clear All</button>
+                    </div>
+                </div>
+
+                <div class="config-actions">
+                    <button id="saveConfigBtn" class="config-btn">
+                        Save Configuration
+                    </button>
+                    <div class="file-input-wrapper">
+                        <span class="file-input-label">Load Configuration</span>
+                        <input
+                            type="file"
+                            id="loadConfigInput"
+                            accept=".json"
+                        />
+                    </div>
+                </div>
+
+                <p style="margin-top: 20px; font-size: 0.9em">
+                    <strong>Configuration format:</strong><br />
+                    Presets, dropdown options, and parameter selections will be saved as JSON.
+                </p>
+            </div>
+        </div>
+
+        <!------------------------------------------------------------
+        Configuration of Presets, Dropdown Options, and Other Settings
+        Copy configuration from your JSON file into:
+        const EMBEDDED_CONFIG = <PASTE CONTENT OF YOUR CONFIG>
+        ------------------------------------------------------------->
+
+        <script>
+            // Embedded Configuration - Now matches JSON format
+            const EMBEDDED_CONFIG = {
+                presets: {
+                    solar: {
+                        target: "Sun",
+                        optics: "Solar Scope",
+                        corrector: "0.7x",
+                        focalLength: "1000mm",
+                        apertureRatio: "F2.8",
+                        filter: "Luminance",
+                        camera: "CCD",
+                        exposures: "1x60s",
+                        processing: "PI+RC+LR",
+                        author: "Astrobrot",
+                    },
+                    planetary: {
+                        target: "Jupiter",
+                        optics: 'Refractor 10"',
+                        corrector: "1.0x",
+                        focalLength: "2000mm",
+                        apertureRatio: "F5.6",
+                        filter: "Luminance",
+                        camera: "CCD",
+                        exposures: "5x30s",
+                        processing: "PI+DR",
+                        author: "Astrobrot",
+                    },
+                    deepsky: {
+                        target: "M31",
+                        optics: 'Reflector 8"',
+                        corrector: "2x",
+                        focalLength: "4000mm",
+                        apertureRatio: "F4",
+                        filter: "Ha",
+                        camera: "CCD",
+                        exposures: "10x60s",
+                        processing: "PI+STF",
+                        author: "Astrobrot",
+                    },
+                },
+                options: {
+                    optics: [
+                        'Reflector 8"',
+                        'Refractor 10"',
+                        'Dobsonian 14"',
+                        'Reflector 12"',
+                        'Refractor 8"',
+                        "Solar Scope",
+                    ],
+                    corrector: ["0.7x", "1.0x", "2x"],
+                    focalLength: [
+                        "1000mm",
+                        "2000mm",
+                        "4000mm",
+                        "8000mm",
+                        "13000mm",
+                    ],
+                    apertureRatio: [
+                        "F1.4",
+                        "F2",
+                        "F2.8",
+                        "F3.5",
+                        "F4",
+                        "F5.6",
+                        "F8",
+                        "F11",
+                    ],
+                    filter: [
+                        "Luminance",
+                        "Red",
+                        "Green",
+                        "Blue",
+                        "Ha",
+                        "O3",
+                        "SII",
+                        "Light Pollution Cut",
+                    ],
+                    camera: [
+                        "DSLR",
+                        "CCD",
+                        "CMOS",
+                        "SBIG STL",
+                        "ASI1600MM",
+                        "ZWO ASI294MC",
+                    ],
+                    author: ["Astrobrot", "John Doe", "Jane Smith"],
+                },
+                darkMode: true,
+                filenameParams: [
+                    "target", "optics", "corrector", "focalLength", 
+                    "apertureRatio", "filter", "camera", "exposures",
+                    "date", "time", "processing"
+                ],
+                titleParams: [
+                    "target", "optics", "corrector", "focalLength",
+                    "apertureRatio", "filter", "camera", "exposures",
+                    "date", "time", "processing", "author"
+                ],
+                titleSeparator: " - "
+            };
+
+            // ********************************************************************
+
+            // Configuration - This now uses the embedded config as default
+            const OPTIONS = EMBEDDED_CONFIG.options;
+            const PRESETS = EMBEDDED_CONFIG.presets;
+
+            // DOM Elements
+            const elements = {
+                target: document.getElementById("target"),
+                optics: document.getElementById("optics"),
+                corrector: document.getElementById("corrector"),
+                focalLength: document.getElementById("focalLength"),
+                apertureRatio: document.getElementById("apertureRatio"),
+                filter: document.getElementById("filter"),
+                camera: document.getElementById("camera"),
+                exposures: document.getElementById("exposures"),
+                date: document.getElementById("date"),
+                time: document.getElementById("time"),
+                processing: document.getElementById("processing"),
+                author: document.getElementById("author"),
+                filetype: document.getElementById("filetype"),
+                titleSeparator: document.getElementById("titleSeparator"),
+                filenameResult: document.getElementById("filename-result"),
+                titleResult: document.getElementById("title-result"),
+                copyFilename: document.getElementById("copy-filename"),
+                copyTitle: document.getElementById("copy-title"),
+                calendarBtn: document.getElementById("calendarBtn"),
+                shuffleBtn: document.getElementById("shuffleBtn"),
+                helpBtn: document.getElementById("helpBtn"),
+                closeModal: document.querySelector(".close"),
+                helpModal: document.getElementById("helpModal"),
+                darkModeToggle: document.getElementById("darkModeToggle"),
+                notification: document.getElementById("notification"),
+                opticsSelect: document.getElementById("optics-select"),
+                correctorSelect: document.getElementById("corrector-select"),
+                focalLengthSelect:
+                    document.getElementById("focalLength-select"),
+                filterSelect: document.getElementById("filter-select"),
+                cameraSelect: document.getElementById("camera-select"),
+                apertureRatioSelect: document.getElementById(
+                    "apertureRatio-select",
+                ),
+                authorSelect: document.getElementById("author-select"),
+                configBtn: document.getElementById("configBtn"),
+                cleanBtn: document.getElementById("cleanBtn"),
+                configModal: document.getElementById("configModal"),
+                saveConfigBtn: document.getElementById("saveConfigBtn"),
+                loadConfigInput: document.getElementById("loadConfigInput"),
+                calendar: document.getElementById("calendar"),
+                prevMonth: document.getElementById("prevMonth"),
+                nextMonth: document.getElementById("nextMonth"),
+                monthYear: document.querySelector(".calendar-month-year"),
+                presetButtons: document.getElementById("presetButtons"),
+            };
+
+            // Calendar state
+            let currentMonth = new Date().getMonth();
+            let currentYear = new Date().getFullYear();
+            let selectedDate = null;
+
+            // Track button states to prevent spamming
+            const copyButtonStates = {
+                filename: false,
+                title: false,
+            };
+
+            // New variables for parameter selection
+            const filenameParamFields = [
+                { key: "target", label: "Target" },
+                { key: "optics", label: "Optics" },
+                { key: "corrector", label: "Corrector" },
+                { key: "focalLength", label: "Focal Length" },
+                { key: "apertureRatio", label: "Aperture Ratio" },
+                { key: "filter", label: "Filter" },
+                { key: "camera", label: "Camera" },
+                { key: "exposures", label: "Exposures" },
+                { key: "date", label: "Date" },
+                { key: "time", label: "Time" },
+                { key: "processing", label: "Processing" },
+            ];
+
+            const titleParamFields = [
+                { key: "target", label: "Target" },
+                { key: "optics", label: "Optics" },
+                { key: "corrector", label: "Corrector" },
+                { key: "focalLength", label: "Focal Length" },
+                { key: "apertureRatio", label: "Aperture Ratio" },
+                { key: "filter", label: "Filter" },
+                { key: "camera", label: "Camera" },
+                { key: "exposures", label: "Exposures" },
+                { key: "date", label: "Date" },
+                { key: "time", label: "Time" },
+                { key: "processing", label: "Processing" },
+                { key: "author", label: "Author" },
+            ];
+
+            // Store selected parameters (initialized from embedded config)
+            let selectedFilenameParams = new Set(EMBEDDED_CONFIG.filenameParams);
+            let selectedTitleParams = new Set(EMBEDDED_CONFIG.titleParams);
+
+            // Drag variables for modal
+            let isDragging = false;
+            let currentX;
+            let currentY;
+            let initialX;
+            let initialY;
+            let xOffset = 0;
+            let yOffset = 0;
+
+            // Initialize dropdowns
+            function initDropdowns() {
+                // Create options for optics, corrector, focalLength, apertureRatio, filter and camera dropdowns
+                OPTIONS.optics.forEach((option) => {
+                    const optionElement = document.createElement("option");
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    elements.opticsSelect.appendChild(optionElement);
+                });
+
+                OPTIONS.corrector.forEach((option) => {
+                    const optionElement = document.createElement("option");
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    elements.correctorSelect.appendChild(optionElement);
+                });
+
+                OPTIONS.focalLength.forEach((option) => {
+                    const optionElement = document.createElement("option");
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    elements.focalLengthSelect.appendChild(optionElement);
+                });
+
+                OPTIONS.apertureRatio.forEach((option) => {
+                    const optionElement = document.createElement("option");
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    elements.apertureRatioSelect.appendChild(optionElement);
+                });
+
+                OPTIONS.filter.forEach((option) => {
+                    const optionElement = document.createElement("option");
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    elements.filterSelect.appendChild(optionElement);
+                });
+
+                OPTIONS.camera.forEach((option) => {
+                    const optionElement = document.createElement("option");
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    elements.cameraSelect.appendChild(optionElement);
+                });
+
+                // Create options for author dropdown
+                OPTIONS.author.forEach((option) => {
+                    const optionElement = document.createElement("option");
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    elements.authorSelect.appendChild(optionElement);
+                });
+
+                // Set up event listeners for dropdowns
+                elements.opticsSelect.addEventListener("change", function () {
+                    elements.optics.value = this.value;
+                    updateResults();
+                });
+
+                elements.correctorSelect.addEventListener(
+                    "change",
+                    function () {
+                        elements.corrector.value = this.value;
+                        updateResults();
+                    },
+                );
+
+                elements.focalLengthSelect.addEventListener(
+                    "change",
+                    function () {
+                        elements.focalLength.value = this.value;
+                        updateResults();
+                    },
+                );
+
+                elements.apertureRatioSelect.addEventListener(
+                    "change",
+                    function () {
+                        elements.apertureRatio.value = this.value;
+                        updateResults();
+                    },
+                );
+
+                elements.filterSelect.addEventListener("change", function () {
+                    elements.filter.value = this.value;
+                    updateResults();
+                });
+
+                elements.cameraSelect.addEventListener("change", function () {
+                    elements.camera.value = this.value;
+                    updateResults();
+                });
+
+                elements.authorSelect.addEventListener("change", function () {
+                    elements.author.value = this.value;
+                    updateResults();
+                });
+
+                // Set up event listeners for manual input fields with immediate updates
+                elements.optics.addEventListener("input", function () {
+                    // Update dropdown to match manual input (if it's a valid option)
+                    const selectedOption = OPTIONS.optics.find(
+                        (opt) => opt === this.value,
+                    );
+                    if (selectedOption) {
+                        elements.opticsSelect.value = selectedOption;
+                    } else {
+                        // If not found, set to empty (no selection)
+                        elements.opticsSelect.value = "";
+                    }
+                    updateResults();
+                });
+
+                elements.corrector.addEventListener("input", function () {
+                    // Update dropdown to match manual input (if it's a valid option)
+                    const selectedOption = OPTIONS.corrector.find(
+                        (opt) => opt === this.value,
+                    );
+                    if (selectedOption) {
+                        elements.correctorSelect.value = selectedOption;
+                    } else {
+                        // If not found, set to empty (no selection)
+                        elements.correctorSelect.value = "";
+                    }
+                    updateResults();
+                });
+
+                elements.focalLength.addEventListener("input", function () {
+                    // Update dropdown to match manual input (if it's a valid option)
+                    const selectedOption = OPTIONS.focalLength.find(
+                        (opt) => opt === this.value,
+                    );
+                    if (selectedOption) {
+                        elements.focalLengthSelect.value = selectedOption;
+                    } else {
+                        // If not found, set to empty (no selection)
+                        elements.focalLengthSelect.value = "";
+                    }
+                    updateResults();
+                });
+
+                elements.apertureRatio.addEventListener("input", function () {
+                    // Update dropdown to match manual input (if it's a valid option)
+                    const selectedOption = OPTIONS.apertureRatio.find(
+                        (opt) => opt === this.value,
+                    );
+                    if (selectedOption) {
+                        elements.apertureRatioSelect.value = selectedOption;
+                    } else {
+                        // If not found, set to empty (no selection)
+                        elements.apertureRatioSelect.value = "";
+                    }
+                    updateResults();
+                });
+
+                elements.filter.addEventListener("input", function () {
+                    const selectedOption = OPTIONS.filter.find(
+                        (opt) => opt === this.value,
+                    );
+                    if (selectedOption) {
+                        elements.filterSelect.value = selectedOption;
+                    } else {
+                        elements.filterSelect.value = "";
+                    }
+                    updateResults();
+                });
+
+                elements.camera.addEventListener("input", function () {
+                    const selectedOption = OPTIONS.camera.find(
+                        (opt) => opt === this.value,
+                    );
+                    if (selectedOption) {
+                        elements.cameraSelect.value = selectedOption;
+                    } else {
+                        elements.cameraSelect.value = "";
+                    }
+                    updateResults();
+                });
+
+                // Clean button
+                elements.cleanBtn.addEventListener("click", function () {
+                    // Clear all input fields and selects (except filetype and titleSeparator)
+                    document.querySelectorAll("input, select").forEach((el) => {
+                        if (
+                            el.id !== "filetype" &&
+                            el.id !== "titleSeparator"
+                        ) {
+                            el.value = "";
+                        }
+                    });
+
+                    // Clear the calendar date if set
+                    selectedDate = null;
+
+                    updateResults();
+                });
+
+                elements.author.addEventListener("input", function () {
+                    // Update dropdown to match manual input (if it's a valid option)
+                    const selectedOption = OPTIONS.author.find(
+                        (opt) => opt === this.value,
+                    );
+                    if (selectedOption) {
+                        elements.authorSelect.value = selectedOption;
+                    } else {
+                        // If not found, set to empty (no selection)
+                        elements.authorSelect.value = "";
+                    }
+                    updateResults();
+                });
+
+                // Add immediate update for target field (the bug fix)
+                elements.target.addEventListener("input", function () {
+                    updateResults();
+                });
+
+                // Add immediate update for other fields
+                elements.exposures.addEventListener("input", updateResults);
+                elements.date.addEventListener("input", updateResults);
+                elements.time.addEventListener("input", updateResults);
+                elements.processing.addEventListener("input", updateResults);
+            }
+
+            // Initialize parameter selection UI for filename in configuration
+            function initFilenameConfigParamUI() {
+                const container = document.getElementById('filenameConfigParams');
+                
+                // Clear existing content
+                container.innerHTML = '';
+                
+                filenameParamFields.forEach(field => {
+                    const checkboxContainer = document.createElement('div');
+                    checkboxContainer.className = 'param-checkbox-container';
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = `config-filename-param-${field.key}`;
+                    checkbox.value = field.key;
+                    checkbox.checked = selectedFilenameParams.has(field.key); // Use current selections
+                    
+                    const label = document.createElement('label');
+                    label.htmlFor = `config-filename-param-${field.key}`;
+                    label.textContent = field.label;
+                    
+                    checkboxContainer.appendChild(checkbox);
+                    checkboxContainer.appendChild(label);
+                    container.appendChild(checkboxContainer);
+                    
+                    // Add event listener
+                    checkbox.addEventListener('change', function() {
+                        if (this.checked) {
+                            selectedFilenameParams.add(this.value);
+                        } else {
+                            selectedFilenameParams.delete(this.value);
+                        }
+                        updateResults();
+                    });
+                });
+
+                // Add event listeners for select/clear all buttons
+                document.getElementById('selectAllFilenameParams').addEventListener('click', function() {
+                    filenameParamFields.forEach(field => {
+                        const checkbox = document.getElementById(`config-filename-param-${field.key}`);
+                        if (!checkbox.checked) {
+                            checkbox.checked = true;
+                            selectedFilenameParams.add(field.key);
+                        }
+                    });
+                    updateResults();
+                });
+
+                document.getElementById('clearAllFilenameParams').addEventListener('click', function() {
+                    filenameParamFields.forEach(field => {
+                        const checkbox = document.getElementById(`config-filename-param-${field.key}`);
+                        if (checkbox.checked) {
+                            checkbox.checked = false;
+                            selectedFilenameParams.delete(field.key);
+                        }
+                    });
+                    updateResults();
+                });
+            }
+
+            // Initialize parameter selection UI for title in configuration
+            function initTitleConfigParamUI() {
+                const container = document.getElementById('titleConfigParams');
+                
+                // Clear existing content
+                container.innerHTML = '';
+                
+                titleParamFields.forEach(field => {
+                    const checkboxContainer = document.createElement('div');
+                    checkboxContainer.className = 'param-checkbox-container';
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = `config-title-param-${field.key}`;
+                    checkbox.value = field.key;
+                    checkbox.checked = selectedTitleParams.has(field.key); // Use current selections
+                    
+                    const label = document.createElement('label');
+                    label.htmlFor = `config-title-param-${field.key}`;
+                    label.textContent = field.label;
+                    
+                    checkboxContainer.appendChild(checkbox);
+                    checkboxContainer.appendChild(label);
+                    container.appendChild(checkboxContainer);
+                    
+                    // Add event listener
+                    checkbox.addEventListener('change', function() {
+                        if (this.checked) {
+                            selectedTitleParams.add(this.value);
+                        } else {
+                            selectedTitleParams.delete(this.value);
+                        }
+                        updateResults();
+                    });
+                });
+
+                // Add event listeners for select/clear all buttons
+                document.getElementById('selectAllTitleParams').addEventListener('click', function() {
+                    titleParamFields.forEach(field => {
+                        const checkbox = document.getElementById(`config-title-param-${field.key}`);
+                        if (!checkbox.checked) {
+                            checkbox.checked = true;
+                            selectedTitleParams.add(field.key);
+                        }
+                    });
+                    updateResults();
+                });
+
+                document.getElementById('clearAllTitleParams').addEventListener('click', function() {
+                    titleParamFields.forEach(field => {
+                        const checkbox = document.getElementById(`config-title-param-${field.key}`);
+                        if (checkbox.checked) {
+                            checkbox.checked = false;
+                            selectedTitleParams.delete(field.key);
+                        }
+                    });
+                    updateResults();
+                });
+            }
+
+            // Generate filename based on selected fields
+            function generateFilename() {
+                let filename = "";
+
+                filenameParamFields.forEach(field => {
+                    // Only include selected parameters
+                    if (selectedFilenameParams.has(field.key)) {
+                        const value = document.getElementById(field.key).value;
+                        if (value.trim() !== "") {
+                            // Replace spaces with hyphens
+                            const cleanValue = value.replace(/\s+/g, "-");
+
+                            if (filename === "") {
+                                filename = cleanValue;
+                            } else {
+                                filename += `_${cleanValue}`;
+                            }
+                        }
+                    }
+                });
+
+                const filetype = document.getElementById("filetype").value;
+                if (filename === "") {
+                    filename = `image.${filetype}`;
+                } else {
+                    filename += `.${filetype}`;
+                }
+
+                return filename;
+            }
+
+            // Generate image title
+            function generateTitle() {
+                const separator = elements.titleSeparator.value || EMBEDDED_CONFIG.titleSeparator;
+
+                let title = "";
+
+                titleParamFields.forEach((field) => {
+                    // Only include selected parameters
+                    if (selectedTitleParams.has(field.key)) {
+                        const value = document.getElementById(field.key).value;
+                        if (value.trim() !== "") {
+                            // Replace spaces with hyphens
+                            const cleanValue = value;
+
+                            if (title === "") {
+                                title = cleanValue;
+                            } else {
+                                title += `${separator}${cleanValue}`;
+                            }
+                        }
+                    }
+                });
+
+                return title;
+            }
+
+            // Update results
+            function updateResults() {
+                elements.filenameResult.textContent = generateFilename();
+                elements.titleResult.textContent = generateTitle();
+            }
+
+            // Apply preset
+            function applyPreset(presetName) {
+                if (presetName === "clear") {
+                    // Clear all fields
+                    document.querySelectorAll("input, select").forEach((el) => {
+                        if (
+                            el.id !== "filetype" &&
+                            el.id !== "titleSeparator"
+                        ) {
+                            el.value = "";
+                        }
+                    });
+                } else if (PRESETS[presetName]) {
+                    const preset = PRESETS[presetName];
+
+                    // Apply values from preset
+                    Object.keys(preset).forEach((key) => {
+                        if (key === "filetype") {
+                            elements.filetype.value = preset[key];
+                        } else if (key === "target" && elements.target) {
+                            elements.target.value = preset[key];
+                        } else if (key === "optics" && elements.optics) {
+                            elements.optics.value = preset[key];
+                            // Update corresponding dropdown
+                            const selectedOption = OPTIONS.optics.find(
+                                (opt) => opt === preset[key],
+                            );
+                            if (selectedOption) {
+                                elements.opticsSelect.value = selectedOption;
+                            } else {
+                                elements.opticsSelect.value = "";
+                            }
+                        } else if (key === "corrector" && elements.corrector) {
+                            elements.corrector.value = preset[key];
+                            // Update corresponding dropdown
+                            const selectedOption = OPTIONS.corrector.find(
+                                (opt) => opt === preset[key],
+                            );
+                            if (selectedOption) {
+                                elements.correctorSelect.value = selectedOption;
+                            } else {
+                                elements.correctorSelect.value = "";
+                            }
+                        } else if (
+                            key === "focalLength" &&
+                            elements.focalLength
+                        ) {
+                            elements.focalLength.value = preset[key];
+                            // Update corresponding dropdown
+                            const selectedOption = OPTIONS.focalLength.find(
+                                (opt) => opt === preset[key],
+                            );
+                            if (selectedOption) {
+                                elements.focalLengthSelect.value =
+                                    selectedOption;
+                            } else {
+                                elements.focalLengthSelect.value = "";
+                            }
+                        } else if (
+                            key === "apertureRatio" &&
+                            elements.apertureRatio
+                        ) {
+                            elements.apertureRatio.value = preset[key];
+                            // Update corresponding dropdown
+                            const selectedOption = OPTIONS.apertureRatio.find(
+                                (opt) => opt === preset[key],
+                            );
+                            if (selectedOption) {
+                                elements.apertureRatioSelect.value =
+                                    selectedOption;
+                            } else {
+                                elements.apertureRatioSelect.value = "";
+                            }
+                        } else if (key === "filter" && elements.filter) {
+                            elements.filter.value = preset[key];
+                            // Update corresponding dropdown
+                            const selectedOption = OPTIONS.filter.find(
+                                (opt) => opt === preset[key],
+                            );
+                            if (selectedOption) {
+                                elements.filterSelect.value = selectedOption;
+                            } else {
+                                elements.filterSelect.value = "";
+                            }
+                        } else if (key === "camera" && elements.camera) {
+                            elements.camera.value = preset[key];
+                            // Update corresponding dropdown
+                            const selectedOption = OPTIONS.camera.find(
+                                (opt) => opt === preset[key],
+                            );
+                            if (selectedOption) {
+                                elements.cameraSelect.value = selectedOption;
+                            } else {
+                                elements.cameraSelect.value = "";
+                            }
+                        } else if (key === "exposures" && elements.exposures) {
+                            elements.exposures.value = preset[key];
+                        } else if (key === "author" && elements.author) {
+                            elements.author.value = preset[key];
+                            // Update corresponding dropdown
+                            const selectedOption = OPTIONS.author.find(
+                                (opt) => opt === preset[key],
+                            );
+                            if (selectedOption) {
+                                elements.authorSelect.value = selectedOption;
+                            } else {
+                                elements.authorSelect.value = "";
+                            }
+                        } else if (
+                            key === "processing" &&
+                            elements.processing
+                        ) {
+                            elements.processing.value = preset[key];
+                        }
+                    });
+                }
+
+                updateResults();
+            }
+
+            // Shuffle random values
+            function shufflePreset() {
+                const fields = [
+                    {
+                        key: "target",
+                        value: ["M31", "Jupiter", "Sun", "Andromeda", "Saturn"],
+                    },
+                    { key: "optics", value: OPTIONS.optics },
+                    { key: "corrector", value: OPTIONS.corrector },
+                    { key: "focalLength", value: OPTIONS.focalLength },
+                    { key: "apertureRatio", value: OPTIONS.apertureRatio },
+                    { key: "filter", value: OPTIONS.filter },
+                    { key: "camera", value: OPTIONS.camera },
+                    {
+                        key: "exposures",
+                        value: ["5x30s", "10x60s", "2x90s", "15x45s"],
+                    },
+                    {
+                        key: "processing",
+                        value: ["PI+RC+LR", "PI+DR", "PI+STF", "None"],
+                    },
+                    {
+                        key: "author",
+                        value: OPTIONS.author,
+                    },
+                ];
+
+                fields.forEach((field) => {
+                    if (field.key === "date") return;
+                    const randomValue =
+                        field.value[
+                            Math.floor(Math.random() * field.value.length)
+                        ];
+
+                    if (field.key === "target") {
+                        elements.target.value = randomValue;
+                    } else if (field.key === "optics") {
+                        elements.optics.value = randomValue;
+                        // Update dropdown
+                        const selectedOption = OPTIONS.optics.find(
+                            (opt) => opt === randomValue,
+                        );
+                        if (selectedOption) {
+                            elements.opticsSelect.value = selectedOption;
+                        } else {
+                            elements.opticsSelect.value = "";
+                        }
+                    } else if (field.key === "corrector") {
+                        elements.corrector.value = randomValue;
+                        // Update dropdown
+                        const selectedOption = OPTIONS.corrector.find(
+                            (opt) => opt === randomValue,
+                        );
+                        if (selectedOption) {
+                            elements.correctorSelect.value = selectedOption;
+                        } else {
+                            elements.correctorSelect.value = "";
+                        }
+                    } else if (field.key === "focalLength") {
+                        elements.focalLength.value = randomValue;
+                        // Update dropdown
+                        const selectedOption = OPTIONS.focalLength.find(
+                            (opt) => opt === randomValue,
+                        );
+                        if (selectedOption) {
+                            elements.focalLengthSelect.value = selectedOption;
+                        } else {
+                            elements.focalLengthSelect.value = "";
+                        }
+                    } else if (field.key === "apertureRatio") {
+                        elements.apertureRatio.value = randomValue;
+                        // Update dropdown
+                        const selectedOption = OPTIONS.apertureRatio.find(
+                            (opt) => opt === randomValue,
+                        );
+                        if (selectedOption) {
+                            elements.apertureRatioSelect.value = selectedOption;
+                        } else {
+                            elements.apertureRatioSelect.value = "";
+                        }
+                    } else if (field.key === "filter") {
+                        elements.filter.value = randomValue;
+                        // Update dropdown
+                        const selectedOption = OPTIONS.filter.find(
+                            (opt) => opt === randomValue,
+                        );
+                        if (selectedOption) {
+                            elements.filterSelect.value = selectedOption;
+                        } else {
+                            elements.filterSelect.value = "";
+                        }
+                    } else if (field.key === "camera") {
+                        elements.camera.value = randomValue;
+                        // Update dropdown
+                        const selectedOption = OPTIONS.camera.find(
+                            (opt) => opt === randomValue,
+                        );
+                        if (selectedOption) {
+                            elements.cameraSelect.value = selectedOption;
+                        } else {
+                            elements.cameraSelect.value = "";
+                        }
+                    } else if (field.key === "exposures") {
+                        elements.exposures.value = randomValue;
+                    } else if (field.key === "processing") {
+                        elements.processing.value = randomValue;
+                    } else if (field.key === "author") {
+                        elements.author.value = randomValue;
+                        // Update dropdown
+                        const selectedOption = OPTIONS.author.find(
+                            (opt) => opt === randomValue,
+                        );
+                        if (selectedOption) {
+                            elements.authorSelect.value = selectedOption;
+                        } else {
+                            elements.authorSelect.value = "";
+                        }
+                    }
+                });
+
+                // Set date to today
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, "0");
+                const day = String(now.getDate()).padStart(2, "0");
+                elements.date.value = `${year}-${month}-${day}`;
+
+                updateResults();
+            }
+
+            // Copy to clipboard with proper feedback
+            function copyToClipboard(text, element) {
+                // Prevent multiple rapid clicks
+                if (copyButtonStates[element.id] === true) return;
+
+                // Set button state to prevent spamming
+                copyButtonStates[element.id] = true;
+
+                // Save original text
+                const originalText = element.textContent;
+
+                // Show "Copied!" feedback immediately
+                element.textContent = "Copied!";
+
+                navigator.clipboard
+                    .writeText(text)
+                    .then(() => {
+                        // Reset button after 2 seconds
+                        setTimeout(() => {
+                            element.textContent = originalText;
+                            copyButtonStates[element.id] = false;
+                        }, 2000);
+                    })
+                    .catch((err) => {
+                        console.error("Failed to copy: ", err);
+                        // Reset button even on error
+                        setTimeout(() => {
+                            element.textContent = originalText;
+                            copyButtonStates[element.id] = false;
+                        }, 2000);
+                    });
+            }
+
+            // Set today's date
+            function setToday() {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, "0");
+                const day = String(now.getDate()).padStart(2, "0");
+                elements.date.value = `${year}-${month}-${day}`;
+                updateResults();
+            }
+
+            // Toggle dark mode
+            function toggleDarkMode() {
+                document.body.classList.toggle("dark-mode");
+
+                // Save dark mode state to localStorage
+                localStorage.setItem(
+                    "darkMode",
+                    elements.darkModeToggle.checked,
+                );
+            }
+
+            // Apply dark mode from saved state
+            function applyDarkModeFromStorage() {
+                const darkModeEnabled =
+                    localStorage.getItem("darkMode") === "true";
+                elements.darkModeToggle.checked = darkModeEnabled;
+
+                if (darkModeEnabled) {
+                    document.body.classList.add("dark-mode");
+                }
+            }
+
+            // Initialize dark mode based on embedded configuration
+            function initializeDarkMode() {
+                const initialDarkMode = EMBEDDED_CONFIG.darkMode || false;
+
+                // Set the toggle state
+                elements.darkModeToggle.checked = initialDarkMode;
+
+                // Apply dark mode class if needed
+                if (initialDarkMode) {
+                    document.body.classList.add("dark-mode");
+                } else {
+                    document.body.classList.remove("dark-mode");
+                }
+
+                // Save to localStorage for persistence
+                localStorage.setItem("darkMode", initialDarkMode);
+            }
+
+            // Show help modal
+            function showHelp() {
+                elements.helpModal.style.display = "block";
+            }
+
+            // Close help modal
+            function closeHelp() {
+                elements.helpModal.style.display = "none";
+            }
+
+            // Show configuration modal
+            function showConfig() {
+                elements.configModal.style.display = "block";
+            }
+
+            // Close configuration modal
+            function closeConfig() {
+                elements.configModal.style.display = "none";
+            }
+
+            // Save configuration to JSON file
+            function saveConfig() {
+                const config = {
+                    presets: PRESETS,
+                    options: OPTIONS,
+                    darkMode: elements.darkModeToggle.checked,
+                    filenameParams: Array.from(selectedFilenameParams),
+                    titleParams: Array.from(selectedTitleParams),
+                    titleSeparator: elements.titleSeparator.value || EMBEDDED_CONFIG.titleSeparator
+                };
+
+                const dataStr = JSON.stringify(config, null, 2);
+                const dataUri =
+                    "data:application/json;charset=utf-8," +
+                    encodeURIComponent(dataStr);
+
+                const exportFileDefaultName = "astro-filename-config.json";
+
+                const linkElement = document.createElement("a");
+                linkElement.setAttribute("href", dataUri);
+                linkElement.setAttribute("download", exportFileDefaultName);
+                linkElement.click();
+
+                // Show notification
+                showNotification("Configuration saved successfully!");
+            }
+
+            // Load configuration from JSON file
+            function loadConfig(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    try {
+                        const config = JSON.parse(e.target.result);
+
+                        // Update presets and options
+                        if (config.presets) {
+                            Object.assign(PRESETS, config.presets);
+                        }
+
+                        if (config.options) {
+                            Object.assign(OPTIONS, config.options);
+                        }
+
+                        // Apply parameter selections if present
+                        if (config.filenameParams) {
+                            selectedFilenameParams = new Set(config.filenameParams);
+                        }
+                        
+                        if (config.titleParams) {
+                            selectedTitleParams = new Set(config.titleParams);
+                        }
+
+                        // Apply title separator if present
+                        if (config.titleSeparator !== undefined) {
+                            elements.titleSeparator.value = config.titleSeparator;
+                        }
+
+                        // Apply dark mode setting if present
+                        if (config.darkMode !== undefined) {
+                            elements.darkModeToggle.checked = config.darkMode;
+                            if (config.darkMode) {
+                                document.body.classList.add("dark-mode");
+                            } else {
+                                document.body.classList.remove("dark-mode");
+                            }
+                        }
+
+                        // Update dropdowns
+                        updateDropdowns();
+
+                        // Refresh preset buttons to show only those in loaded config
+                        refreshPresetButtons();
+
+                        // Reinitialize parameter selection UI to prevent duplicates
+                        initFilenameConfigParamUI();
+                        initTitleConfigParamUI();
+
+                        // Apply current values to fields (if they exist)
+                        if (elements.target.value) applyPreset("solar"); // Just to trigger update
+
+                        showNotification("Configuration loaded successfully!");
+                    } catch (error) {
+                        console.error("Error parsing config file:", error);
+                        showNotification(
+                            "Error loading configuration file!",
+                            true,
+                        );
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            // Update dropdowns after loading config
+            function updateDropdowns() {
+                // Clear existing options
+                elements.opticsSelect.innerHTML =
+                    '<option value="">Select Optics</option>';
+                elements.correctorSelect.innerHTML =
+                    '<option value="">Select Corrector</option>';
+                elements.focalLengthSelect.innerHTML =
+                    '<option value="">Select Focal Length</option>';
+                elements.apertureRatioSelect.innerHTML =
+                    '<option value="">Select Aperture</option>';
+                elements.filterSelect.innerHTML =
+                    '<option value="">Select Filter</option>';
+                elements.cameraSelect.innerHTML =
+                    '<option value="">Select Camera</option>';
+                elements.authorSelect.innerHTML =
+                    '<option value="">Select Author</option>';
+
+                // Add new options
+                OPTIONS.optics.forEach((opt) => {
+                    const option = document.createElement("option");
+                    option.value = opt;
+                    option.textContent = opt;
+                    elements.opticsSelect.appendChild(option);
+                });
+
+                OPTIONS.corrector.forEach((opt) => {
+                    const option = document.createElement("option");
+                    option.value = opt;
+                    option.textContent = opt;
+                    elements.correctorSelect.appendChild(option);
+                });
+
+                OPTIONS.focalLength.forEach((opt) => {
+                    const option = document.createElement("option");
+                    option.value = opt;
+                    option.textContent = opt;
+                    elements.focalLengthSelect.appendChild(option);
+                });
+
+                OPTIONS.apertureRatio.forEach((opt) => {
+                    const option = document.createElement("option");
+                    option.value = opt;
+                    option.textContent = opt;
+                    elements.apertureRatioSelect.appendChild(option);
+                });
+
+                OPTIONS.filter.forEach((opt) => {
+                    const option = document.createElement("option");
+                    option.value = opt;
+                    option.textContent = opt;
+                    elements.filterSelect.appendChild(option);
+                });
+
+                OPTIONS.camera.forEach((opt) => {
+                    const option = document.createElement("option");
+                    option.value = opt;
+                    option.textContent = opt;
+                    elements.cameraSelect.appendChild(option);
+                });
+
+                OPTIONS.author.forEach((opt) => {
+                    const option = document.createElement("option");
+                    option.value = opt;
+                    option.textContent = opt;
+                    elements.authorSelect.appendChild(option);
+                });
+            }
+
+            // Refresh preset buttons based on current PRESETS
+            function refreshPresetButtons() {
+                // Remove all existing preset buttons except the special ones (Clear, Shuffle, Config)
+                const presetButtons =
+                    elements.presetButtons.querySelectorAll(".preset-btn");
+                presetButtons.forEach((btn) => {
+                    if (
+                        !btn.id ||
+                        (btn.id !== "shuffleBtn" &&
+                            btn.id !== "configBtn" &&
+                            btn.id !== "cleanBtn")
+                    ) {
+                        elements.presetButtons.removeChild(btn);
+                    }
+                });
+
+                // Add buttons for each preset in PRESETS
+                Object.keys(PRESETS).forEach((presetName) => {
+                    const button = document.createElement("button");
+                    button.className = "preset-btn";
+                    button.setAttribute("data-preset", presetName);
+                    button.textContent =
+                        presetName.charAt(0).toUpperCase() +
+                        presetName.slice(1);
+                    elements.presetButtons.appendChild(button);
+                });
+
+                // Re-attach event listeners to new buttons
+                elements.presetButtons
+                    .querySelectorAll(".preset-btn")
+                    .forEach((btn) => {
+                        btn.addEventListener("click", () => {
+                            const preset = btn.getAttribute("data-preset");
+                            if (preset === "clear") {
+                                applyPreset(preset);
+                            } else {
+                                applyPreset(preset);
+                            }
+                        });
+                    });
+            }
+
+            // Show notification
+            function showNotification(message, isError = false) {
+                const notification = elements.notification;
+                notification.textContent = message;
+                notification.style.backgroundColor = isError
+                    ? "#f44336"
+                    : "#4caf50";
+                notification.style.display = "block";
+
+                setTimeout(() => {
+                    notification.style.display = "none";
+                }, 3000);
+            }
+
+            // Initialize calendar
+            function initCalendar() {
+                updateCalendar();
+
+                elements.calendarBtn.addEventListener("click", () => {
+                    elements.calendar.style.display =
+                        elements.calendar.style.display === "block"
+                            ? "none"
+                            : "block";
+                });
+
+                document.addEventListener("click", (event) => {
+                    if (
+                        !elements.calendar.contains(event.target) &&
+                        event.target !== elements.calendarBtn
+                    ) {
+                        elements.calendar.style.display = "none";
+                    }
+                });
+
+                // Navigation
+                elements.prevMonth.addEventListener("click", () => {
+                    currentMonth--;
+                    if (currentMonth < 0) {
+                        currentMonth = 11;
+                        currentYear--;
+                    }
+                    updateCalendar();
+                });
+
+                elements.nextMonth.addEventListener("click", () => {
+                    currentMonth++;
+                    if (currentMonth > 11) {
+                        currentMonth = 0;
+                        currentYear++;
+                    }
+                    updateCalendar();
+                });
+            }
+
+            // Update calendar display
+            function updateCalendar() {
+                elements.monthYear.textContent = new Date(
+                    currentYear,
+                    currentMonth,
+                ).toLocaleString("default", { month: "long", year: "numeric" });
+
+                // Clear existing dates
+                const daysGrid =
+                    elements.calendar.querySelector(".calendar-grid");
+                while (daysGrid.children.length > 7) {
+                    daysGrid.removeChild(daysGrid.lastChild);
+                }
+
+                // Get first day of month and number of days
+                const firstDay = new Date(
+                    currentYear,
+                    currentMonth,
+                    1,
+                ).getDay();
+                const daysInMonth = new Date(
+                    currentYear,
+                    currentMonth + 1,
+                    0,
+                ).getDate();
+
+                // Add empty cells for days before the first day of the month
+                for (let i = 0; i < firstDay; i++) {
+                    const emptyCell = document.createElement("div");
+                    emptyCell.classList.add("calendar-day", "other-month");
+                    daysGrid.appendChild(emptyCell);
+                }
+
+                // Add cells for each day of the month
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const dayCell = document.createElement("div");
+                    dayCell.classList.add("calendar-day");
+                    dayCell.textContent = i;
+
+                    // Check if this is today
+                    const today = new Date();
+                    if (
+                        currentYear === today.getFullYear() &&
+                        currentMonth === today.getMonth() &&
+                        i === today.getDate()
+                    ) {
+                        dayCell.classList.add("today");
+                    }
+
+                    // Check if this is selected
+                    if (
+                        selectedDate &&
+                        currentYear === selectedDate.getFullYear() &&
+                        currentMonth === selectedDate.getMonth() &&
+                        i === selectedDate.getDate()
+                    ) {
+                        dayCell.classList.add("selected");
+                    }
+
+                    // Add click event
+                    dayCell.addEventListener("click", () => {
+                        selectedDate = new Date(currentYear, currentMonth, i);
+                        updateDateField();
+                        updateCalendar();
+                    });
+
+                    daysGrid.appendChild(dayCell);
+                }
+            }
+
+            // Update date field with selected date
+            function updateDateField() {
+                if (selectedDate) {
+                    const year = selectedDate.getFullYear();
+                    const month = String(selectedDate.getMonth() + 1).padStart(
+                        2,
+                        "0",
+                    );
+                    const day = String(selectedDate.getDate()).padStart(2, "0");
+                    elements.date.value = `${year}-${month}-${day}`;
+                    updateResults();
+                }
+            }
+
+            // Make config modal draggable
+            function makeModalDraggable() {
+                const header = document.getElementById('configModalHeader');
+                const modal = elements.configModal;
+
+                if (!header || !modal) return;
+
+                header.addEventListener('mousedown', dragStart);
+                document.addEventListener('mouseup', dragEnd);
+                document.addEventListener('mousemove', drag);
+            }
+
+            function dragStart(e) {
+                if (e.target === header || e.target.closest('.config-modal-header')) {
+                    isDragging = true;
+                    
+                    // Get initial mouse position
+                    initialX = e.clientX - xOffset;
+                    initialY = e.clientY - yOffset;
+
+                    // Prevent text selection during drag
+                    e.preventDefault();
+                }
+            }
+
+            function dragEnd() {
+                isDragging = false;
+            }
+
+            function drag(e) {
+                if (isDragging) {
+                    e.preventDefault();
+                    
+                    // Calculate new position
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+
+                    // Update position
+                    xOffset = currentX;
+                    yOffset = currentY;
+
+                    // Apply new position to modal
+                    elements.configModal.style.transform = `translate(${currentX}px, ${currentY}px)`;
+                }
+            }
+
+            // Initialize the application
+            function init() {
+                // Initialize dark mode based on embedded configuration
+                initializeDarkMode();
+
+                // Set initial title separator from config
+                elements.titleSeparator.value = EMBEDDED_CONFIG.titleSeparator;
+
+                initDropdowns();
+                initCalendar();
+                
+                // Initialize config parameter UI
+                initFilenameConfigParamUI();
+                initTitleConfigParamUI();
+
+                // Make config modal draggable
+                makeModalDraggable();
+
+                // Event listeners for fields (except the option buttons which are handled above)
+                document.querySelectorAll("input, select").forEach((el) => {
+                    el.addEventListener("change", updateResults);
+                });
+
+                // Preset buttons
+                document.querySelectorAll(".preset-btn").forEach((btn) => {
+                    btn.addEventListener("click", () => {
+                        const preset = btn.getAttribute("data-preset");
+                        applyPreset(preset);
+                    });
+                });
+
+                // Shuffle button
+                elements.shuffleBtn.addEventListener("click", shufflePreset);
+
+                // Copy buttons - FIXED to maintain functionality
+                elements.copyFilename.addEventListener("click", () => {
+                    copyToClipboard(
+                        elements.filenameResult.textContent,
+                        elements.copyFilename,
+                    );
+                });
+
+                elements.copyTitle.addEventListener("click", () => {
+                    copyToClipboard(
+                        elements.titleResult.textContent,
+                        elements.copyTitle,
+                    );
+                });
+
+                // Help button
+                elements.helpBtn.addEventListener("click", showHelp);
+                elements.closeModal.addEventListener("click", closeHelp);
+
+                // Configuration button
+                elements.configBtn.addEventListener("click", showConfig);
+                elements.saveConfigBtn.addEventListener("click", saveConfig);
+                elements.loadConfigInput.addEventListener("change", loadConfig);
+
+                // Close modals when clicking outside
+                window.addEventListener("click", (event) => {
+                    if (event.target === elements.helpModal) {
+                        closeHelp();
+                    }
+                    if (event.target === elements.configModal) {
+                        closeConfig();
+                    }
+                });
+
+                // Add event listener for the X button in config modal
+                document
+                    .querySelector("#configModal .close")
+                    .addEventListener("click", closeConfig);
+
+                // Dark mode toggle
+                elements.darkModeToggle.addEventListener(
+                    "change",
+                    toggleDarkMode,
+                );
+
+                // Apply saved dark mode setting
+                applyDarkModeFromStorage();
+
+                // Initial update
+                updateResults();
+            }
+
+            // Run initialization when page loads
+            window.addEventListener("DOMContentLoaded", init);
+        </script>
+    </body>
+</html>
