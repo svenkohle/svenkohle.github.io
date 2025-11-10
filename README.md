@@ -1,3 +1,5 @@
-# Hello World
+# Hello Astroworld
 
-try out the preliminary [AstroFilenameGenerator](AstroFilenameGenerator.html)
+* [AstroFilenameGenerator V1](AstroFilenameGenerator.html)
+* [AstroFilenameGenerator Test](AstroFilenameGeneratorTest.html)
+
