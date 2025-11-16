@@ -56,19 +56,8 @@
       "VC200L",
       "EHD 925"
     ],
-    "corrector": [
-      "0.7",
-      "0.79x",
-      "0.8x",
-      "2x"
-    ],
-    "focalLength": [
-      "1000mm",
-      "2000mm",
-      "4000mm",
-      "8000mm",
-      "13000mm"
-    ],
+    "corrector": ["0.7", "0.79x", "0.8x", "2x"],
+    "focalLength": ["1000mm", "2000mm", "4000mm", "8000mm", "13000mm"],
     "apertureRatio": [
       "F1.4",
       "F1.8",
@@ -122,18 +111,10 @@
       "ASI 294MM",
       "ATR 2600M"
     ],
-    "author": [
-      "© Sven Kohle"
-    ]
+    "author": ["© Sven Kohle"]
   },
   "darkMode": false,
-  "filenameParams": [
-    "target",
-    "optics",
-    "filter",
-    "camera",
-    "date"
-  ],
+  "filenameParams": ["date", "target", "optics", "filter", "camera"],
   "titleParams": [
     "target",
     "optics",
