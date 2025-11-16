@@ -844,18 +844,26 @@
                 <div class="config-param-section">
                     <h3>Filename Parameters</h3>
                     <div id="filenameConfigParams"></div>
-                    <div style="margin-top: 10px;">
-                        <button id="selectAllFilenameParams" class="option-btn">Select All</button>
-                        <button id="clearAllFilenameParams" class="option-btn">Clear All</button>
+                    <div style="margin-top: 10px">
+                        <button id="selectAllFilenameParams" class="option-btn">
+                            Select All
+                        </button>
+                        <button id="clearAllFilenameParams" class="option-btn">
+                            Clear All
+                        </button>
                     </div>
                 </div>
 
                 <div class="config-param-section">
                     <h3>Title Parameters</h3>
                     <div id="titleConfigParams"></div>
-                    <div style="margin-top: 10px;">
-                        <button id="selectAllTitleParams" class="option-btn">Select All</button>
-                        <button id="clearAllTitleParams" class="option-btn">Clear All</button>
+                    <div style="margin-top: 10px">
+                        <button id="selectAllTitleParams" class="option-btn">
+                            Select All
+                        </button>
+                        <button id="clearAllTitleParams" class="option-btn">
+                            Clear All
+                        </button>
                     </div>
                 </div>
 
@@ -875,16 +883,23 @@
 
                 <p style="margin-top: 20px; font-size: 0.9em">
                     <strong>Configuration format:</strong><br />
-                    Presets, dropdown options, and parameter selections will be saved as JSON.
+                    Presets, dropdown options, and parameter selections will be
+                    saved as JSON. The JSON file should contain a valid
+                    configuration object with the same structure as the embedded
+                    configuration. Ensure that the JSON file is properly
+                    formatted and contains all necessary fields. Note: You can
+                    adjust the order of parameters used for generating the
+                    filename and image title by changing the respective order in
+                    the JSON file.
                 </p>
             </div>
         </div>
 
         <!------------------------------------------------------------
-        Configuration of Presets, Dropdown Options, and Other Settings
-        Copy configuration from your JSON file into:
-        const EMBEDDED_CONFIG = <PASTE CONTENT OF YOUR CONFIG>
-        ------------------------------------------------------------->
+    Configuration of Presets, Dropdown Options, and Other Settings
+    Copy configuration from your JSON file into:
+    const EMBEDDED_CONFIG = <PASTE CONTENT OF YOUR CONFIG>
+    ------------------------------------------------------------->
 
         <script>
             // Embedded Configuration - Now matches JSON format
@@ -976,16 +991,33 @@
                 },
                 darkMode: true,
                 filenameParams: [
-                    "target", "optics", "corrector", "focalLength", 
-                    "apertureRatio", "filter", "camera", "exposures",
-                    "date", "time", "processing"
+                    "target",
+                    "optics",
+                    "corrector",
+                    "focalLength",
+                    "apertureRatio",
+                    "filter",
+                    "camera",
+                    "exposures",
+                    "date",
+                    "time",
+                    "processing",
                 ],
                 titleParams: [
-                    "target", "optics", "corrector", "focalLength",
-                    "apertureRatio", "filter", "camera", "exposures",
-                    "date", "time", "processing", "author"
+                    "target",
+                    "optics",
+                    "corrector",
+                    "focalLength",
+                    "apertureRatio",
+                    "filter",
+                    "camera",
+                    "exposures",
+                    "date",
+                    "time",
+                    "processing",
+                    "author",
                 ],
-                titleSeparator: " - "
+                titleSeparator: " - ",
             };
 
             // ********************************************************************
@@ -1085,7 +1117,9 @@
             ];
 
             // Store selected parameters (initialized from embedded config)
-            let selectedFilenameParams = new Set(EMBEDDED_CONFIG.filenameParams);
+            let selectedFilenameParams = new Set(
+                EMBEDDED_CONFIG.filenameParams,
+            );
             let selectedTitleParams = new Set(EMBEDDED_CONFIG.titleParams);
 
             // Drag variables for modal
@@ -1322,31 +1356,33 @@
 
             // Initialize parameter selection UI for filename in configuration
             function initFilenameConfigParamUI() {
-                const container = document.getElementById('filenameConfigParams');
-                
+                const container = document.getElementById(
+                    "filenameConfigParams",
+                );
+
                 // Clear existing content
-                container.innerHTML = '';
-                
-                filenameParamFields.forEach(field => {
-                    const checkboxContainer = document.createElement('div');
-                    checkboxContainer.className = 'param-checkbox-container';
-                    
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
+                container.innerHTML = "";
+
+                filenameParamFields.forEach((field) => {
+                    const checkboxContainer = document.createElement("div");
+                    checkboxContainer.className = "param-checkbox-container";
+
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
                     checkbox.id = `config-filename-param-${field.key}`;
                     checkbox.value = field.key;
                     checkbox.checked = selectedFilenameParams.has(field.key); // Use current selections
-                    
-                    const label = document.createElement('label');
+
+                    const label = document.createElement("label");
                     label.htmlFor = `config-filename-param-${field.key}`;
                     label.textContent = field.label;
-                    
+
                     checkboxContainer.appendChild(checkbox);
                     checkboxContainer.appendChild(label);
                     container.appendChild(checkboxContainer);
-                    
+
                     // Add event listener
-                    checkbox.addEventListener('change', function() {
+                    checkbox.addEventListener("change", function () {
                         if (this.checked) {
                             selectedFilenameParams.add(this.value);
                         } else {
@@ -1357,56 +1393,64 @@
                 });
 
                 // Add event listeners for select/clear all buttons
-                document.getElementById('selectAllFilenameParams').addEventListener('click', function() {
-                    filenameParamFields.forEach(field => {
-                        const checkbox = document.getElementById(`config-filename-param-${field.key}`);
-                        if (!checkbox.checked) {
-                            checkbox.checked = true;
-                            selectedFilenameParams.add(field.key);
-                        }
+                document
+                    .getElementById("selectAllFilenameParams")
+                    .addEventListener("click", function () {
+                        filenameParamFields.forEach((field) => {
+                            const checkbox = document.getElementById(
+                                `config-filename-param-${field.key}`,
+                            );
+                            if (!checkbox.checked) {
+                                checkbox.checked = true;
+                                selectedFilenameParams.add(field.key);
+                            }
+                        });
+                        updateResults();
                     });
-                    updateResults();
-                });
 
-                document.getElementById('clearAllFilenameParams').addEventListener('click', function() {
-                    filenameParamFields.forEach(field => {
-                        const checkbox = document.getElementById(`config-filename-param-${field.key}`);
-                        if (checkbox.checked) {
-                            checkbox.checked = false;
-                            selectedFilenameParams.delete(field.key);
-                        }
+                document
+                    .getElementById("clearAllFilenameParams")
+                    .addEventListener("click", function () {
+                        filenameParamFields.forEach((field) => {
+                            const checkbox = document.getElementById(
+                                `config-filename-param-${field.key}`,
+                            );
+                            if (checkbox.checked) {
+                                checkbox.checked = false;
+                                selectedFilenameParams.delete(field.key);
+                            }
+                        });
+                        updateResults();
                     });
-                    updateResults();
-                });
             }
 
             // Initialize parameter selection UI for title in configuration
             function initTitleConfigParamUI() {
-                const container = document.getElementById('titleConfigParams');
-                
+                const container = document.getElementById("titleConfigParams");
+
                 // Clear existing content
-                container.innerHTML = '';
-                
-                titleParamFields.forEach(field => {
-                    const checkboxContainer = document.createElement('div');
-                    checkboxContainer.className = 'param-checkbox-container';
-                    
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
+                container.innerHTML = "";
+
+                titleParamFields.forEach((field) => {
+                    const checkboxContainer = document.createElement("div");
+                    checkboxContainer.className = "param-checkbox-container";
+
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
                     checkbox.id = `config-title-param-${field.key}`;
                     checkbox.value = field.key;
                     checkbox.checked = selectedTitleParams.has(field.key); // Use current selections
-                    
-                    const label = document.createElement('label');
+
+                    const label = document.createElement("label");
                     label.htmlFor = `config-title-param-${field.key}`;
                     label.textContent = field.label;
-                    
+
                     checkboxContainer.appendChild(checkbox);
                     checkboxContainer.appendChild(label);
                     container.appendChild(checkboxContainer);
-                    
+
                     // Add event listener
-                    checkbox.addEventListener('change', function() {
+                    checkbox.addEventListener("change", function () {
                         if (this.checked) {
                             selectedTitleParams.add(this.value);
                         } else {
@@ -1417,46 +1461,52 @@
                 });
 
                 // Add event listeners for select/clear all buttons
-                document.getElementById('selectAllTitleParams').addEventListener('click', function() {
-                    titleParamFields.forEach(field => {
-                        const checkbox = document.getElementById(`config-title-param-${field.key}`);
-                        if (!checkbox.checked) {
-                            checkbox.checked = true;
-                            selectedTitleParams.add(field.key);
-                        }
+                document
+                    .getElementById("selectAllTitleParams")
+                    .addEventListener("click", function () {
+                        titleParamFields.forEach((field) => {
+                            const checkbox = document.getElementById(
+                                `config-title-param-${field.key}`,
+                            );
+                            if (!checkbox.checked) {
+                                checkbox.checked = true;
+                                selectedTitleParams.add(field.key);
+                            }
+                        });
+                        updateResults();
                     });
-                    updateResults();
-                });
 
-                document.getElementById('clearAllTitleParams').addEventListener('click', function() {
-                    titleParamFields.forEach(field => {
-                        const checkbox = document.getElementById(`config-title-param-${field.key}`);
-                        if (checkbox.checked) {
-                            checkbox.checked = false;
-                            selectedTitleParams.delete(field.key);
-                        }
+                document
+                    .getElementById("clearAllTitleParams")
+                    .addEventListener("click", function () {
+                        titleParamFields.forEach((field) => {
+                            const checkbox = document.getElementById(
+                                `config-title-param-${field.key}`,
+                            );
+                            if (checkbox.checked) {
+                                checkbox.checked = false;
+                                selectedTitleParams.delete(field.key);
+                            }
+                        });
+                        updateResults();
                     });
-                    updateResults();
-                });
             }
 
             // Generate filename based on selected fields
             function generateFilename() {
                 let filename = "";
 
-                filenameParamFields.forEach(field => {
-                    // Only include selected parameters
-                    if (selectedFilenameParams.has(field.key)) {
-                        const value = document.getElementById(field.key).value;
-                        if (value.trim() !== "") {
-                            // Replace spaces with hyphens
-                            const cleanValue = value.replace(/\s+/g, "-");
+                // Use the exact order from selectedFilenameParams
+                Array.from(selectedFilenameParams).forEach((key) => {
+                    const element = document.getElementById(key);
+                    if (element && element.value.trim() !== "") {
+                        // Replace spaces with hyphens
+                        const cleanValue = element.value.replace(/\s+/g, "-");
 
-                            if (filename === "") {
-                                filename = cleanValue;
-                            } else {
-                                filename += `_${cleanValue}`;
-                            }
+                        if (filename === "") {
+                            filename = cleanValue;
+                        } else {
+                            filename += `_${cleanValue}`;
                         }
                     }
                 });
@@ -1473,23 +1523,23 @@
 
             // Generate image title
             function generateTitle() {
-                const separator = elements.titleSeparator.value || EMBEDDED_CONFIG.titleSeparator;
+                const separator =
+                    elements.titleSeparator.value ||
+                    EMBEDDED_CONFIG.titleSeparator;
 
                 let title = "";
 
-                titleParamFields.forEach((field) => {
-                    // Only include selected parameters
-                    if (selectedTitleParams.has(field.key)) {
-                        const value = document.getElementById(field.key).value;
-                        if (value.trim() !== "") {
-                            // Replace spaces with hyphens
-                            const cleanValue = value;
+                // Use the exact order from selectedTitleParams
+                Array.from(selectedTitleParams).forEach((key) => {
+                    const element = document.getElementById(key);
+                    if (element && element.value.trim() !== "") {
+                        // Replace spaces with hyphens
+                        const cleanValue = element.value;
 
-                            if (title === "") {
-                                title = cleanValue;
-                            } else {
-                                title += `${separator}${cleanValue}`;
-                            }
+                        if (title === "") {
+                            title = cleanValue;
+                        } else {
+                            title += `${separator}${cleanValue}`;
                         }
                     }
                 });
@@ -1864,7 +1914,9 @@
                     darkMode: elements.darkModeToggle.checked,
                     filenameParams: Array.from(selectedFilenameParams),
                     titleParams: Array.from(selectedTitleParams),
-                    titleSeparator: elements.titleSeparator.value || EMBEDDED_CONFIG.titleSeparator
+                    titleSeparator:
+                        elements.titleSeparator.value ||
+                        EMBEDDED_CONFIG.titleSeparator,
                 };
 
                 const dataStr = JSON.stringify(config, null, 2);
@@ -1904,16 +1956,19 @@
 
                         // Apply parameter selections if present
                         if (config.filenameParams) {
-                            selectedFilenameParams = new Set(config.filenameParams);
+                            selectedFilenameParams = new Set(
+                                config.filenameParams,
+                            );
                         }
-                        
+
                         if (config.titleParams) {
                             selectedTitleParams = new Set(config.titleParams);
                         }
 
                         // Apply title separator if present
                         if (config.titleSeparator !== undefined) {
-                            elements.titleSeparator.value = config.titleSeparator;
+                            elements.titleSeparator.value =
+                                config.titleSeparator;
                         }
 
                         // Apply dark mode setting if present
@@ -2202,20 +2257,23 @@
 
             // Make config modal draggable
             function makeModalDraggable() {
-                const header = document.getElementById('configModalHeader');
+                const header = document.getElementById("configModalHeader");
                 const modal = elements.configModal;
 
                 if (!header || !modal) return;
 
-                header.addEventListener('mousedown', dragStart);
-                document.addEventListener('mouseup', dragEnd);
-                document.addEventListener('mousemove', drag);
+                header.addEventListener("mousedown", dragStart);
+                document.addEventListener("mouseup", dragEnd);
+                document.addEventListener("mousemove", drag);
             }
 
             function dragStart(e) {
-                if (e.target === header || e.target.closest('.config-modal-header')) {
+                if (
+                    e.target === header ||
+                    e.target.closest(".config-modal-header")
+                ) {
                     isDragging = true;
-                    
+
                     // Get initial mouse position
                     initialX = e.clientX - xOffset;
                     initialY = e.clientY - yOffset;
@@ -2232,7 +2290,7 @@
             function drag(e) {
                 if (isDragging) {
                     e.preventDefault();
-                    
+
                     // Calculate new position
                     currentX = e.clientX - initialX;
                     currentY = e.clientY - initialY;
@@ -2256,7 +2314,7 @@
 
                 initDropdowns();
                 initCalendar();
-                
+
                 // Initialize config parameter UI
                 initFilenameConfigParamUI();
                 initTitleConfigParamUI();
