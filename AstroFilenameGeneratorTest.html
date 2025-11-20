@@ -750,6 +750,42 @@
                     margin: 20px;
                 }
             }
+            /* Ensure bright white text for all buttons in dark mode */
+            .dark-mode .preset-btn,
+            .dark-mode .option-btn,
+            .dark-mode .date-btn,
+            .dark-mode .copy-btn,
+            .dark-mode .help-btn,
+            .dark-mode .config-btn,
+            .dark-mode .about-btn,
+            .dark-mode .json-export-btn,
+            .dark-mode .reset-btn {
+                color: #ffffff !important;
+            }
+
+            /* Ensure bright white text for hover states */
+            .dark-mode .preset-btn:hover,
+            .dark-mode .option-btn:hover,
+            .dark-mode .date-btn:hover,
+            .dark-mode .copy-btn:hover,
+            .dark-mode .help-btn:hover,
+            .dark-mode .config-btn:hover,
+            .dark-mode .about-btn:hover,
+            .dark-mode .json-export-btn:hover,
+            .dark-mode .reset-btn:hover {
+                color: #ffffff !important;
+            }
+
+            /* Ensure toggle switch slider text is bright */
+            .dark-mode .toggle-switch input + .slider {
+                color: #ffffff !important;
+            }
+
+            /* Ensure file input labels are bright */
+            .dark-mode .file-input-label {
+                color: #ffffff !important;
+            }
+
         </style>
     </head>
     <body>
@@ -1162,7 +1198,7 @@
         <script>
             // Global variables for version information
             const APP_VERSION = "0.9 Test";
-            const APP_RELEASE_DATE = "2025-11-17";
+            const APP_RELEASE_DATE = "2025-11-19";
 
             // Embedded Configuration - Now matches JSON format
             const EMBEDDED_CONFIG = {
@@ -2152,6 +2188,18 @@
             function showConfig() {
                 elements.configModal.style.display = "block";
 
+                // Darken background when config modal is open
+                const overlay = document.createElement('div');
+                overlay.id = 'config-overlay';
+                overlay.style.position = 'fixed';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100%';
+                overlay.style.height = '100%';
+                overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                overlay.style.zIndex = '1001';
+                document.body.appendChild(overlay);
+
                 // Update dark mode toggle in config modal
                 elements.configDarkModeToggle.checked =
                     document.body.classList.contains("dark-mode");
@@ -2160,6 +2208,12 @@
             // Close configuration modal
             function closeConfig() {
                 elements.configModal.style.display = "none";
+
+                // Remove background overlay
+                const overlay = document.getElementById('config-overlay');
+                if (overlay) {
+                    overlay.remove();
+                }
             }
 
             // Save configuration to JSON file
@@ -2695,8 +2749,13 @@
                     .addEventListener("click", closeAbout);
 
                 // Configuration button
-                elements.configBtn.addEventListener("click", showConfig);
-                elements.saveConfigBtn.addEventListener("click", saveConfig);
+                elements.configBtn.addEventListener("click", function() {
+                    if (elements.configModal.style.display === "block") {
+                        closeConfig();
+                    } else {
+                        showConfig();
+                    }
+                });                elements.saveConfigBtn.addEventListener("click", saveConfig);
                 elements.loadConfigInput.addEventListener("change", loadConfig);
 
                 // Close modals when clicking outside
