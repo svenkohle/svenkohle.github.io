@@ -1,41 +1,28 @@
 {
   "presets": {
-    "solar": {
-      "target": "M31",
-      "optics": "Reflector 8\"",
-      "focalLength": "4000mm",
-      "apertureRatio": "F4",
-      "filter": "Ha",
-      "camera": "CCD",
-      "exposures": "10x60s",
-      "processing": "PI+STF",
-      "author": "Astrobrot"
+    "Sigma105": {
+      "optics": "Sigma 105 Art",
+      "focalLength": "105mm",
+      "apertureRatio": "F1.4",
+      "camera": "ASI 294MM Pro",
+      "author": "Sven Kohle"
     },
-    "planetary": {
+    "test": {
       "target": "Jupiter",
-      "optics": "Refractor 10\"",
-      "corrector": "1.0x",
-      "focalLength": "2000mm",
-      "apertureRatio": "F5.6",
-      "filter": "Luminance",
-      "camera": "CCD",
-      "exposures": "5x30s",
-      "processing": "PI+DR",
-      "author": "Astrobrot"
-    },
-    "deepsky": {
-      "target": "M31",
-      "optics": "Reflector 8\"",
+      "optics": "Dobsonian 14\"",
       "corrector": "2x",
-      "focalLength": "4000mm",
-      "apertureRatio": "F4",
-      "filter": "Ha",
-      "camera": "CCD",
-      "exposures": "10x60s",
-      "processing": "PI+STF",
-      "author": "Astrobrot"
+      "focalLength": "1000mm",
+      "apertureRatio": "F5.6",
+      "filter": "SII",
+      "camera": "CMOS",
+      "exposures": "5x30s",
+      "date": "2025-11-20",
+      "time": "",
+      "processing": "PI+RC+LR",
+      "author": "Jane Smith"
     }
   },
+
   "options": {
     "optics": [
       "IRIX 15",
@@ -60,6 +47,7 @@
     "focalLength": ["1000mm", "2000mm", "4000mm", "8000mm", "13000mm"],
     "apertureRatio": [
       "F1.4",
+      "F1.6",
       "F1.8",
       "F2.0",
       "F2.2",
@@ -96,7 +84,10 @@
       "G 430",
       "CaK 3nm",
       "Ca 2.4Å",
-      "Hα 0.6Å"
+      "Hα 0.6Å",
+      "Optolong LPro",
+      "IDAS D1",
+      "IDAS D2"
     ],
     "camera": [
       "EOS 350D",
@@ -108,10 +99,10 @@
       "ASI 462MC",
       "ASI 462MM",
       "ASI 533MM",
-      "ASI 294MM",
+      "ASI 294MM Pro",
       "ATR 2600M"
     ],
-    "author": ["© Sven Kohle"]
+    "author": ["Sven Kohle"]
   },
   "darkMode": false,
   "filenameParams": ["date", "target", "optics", "filter", "camera"],

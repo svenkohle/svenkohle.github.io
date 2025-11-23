@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Astro Filename Generator</title>
+        <title>AstroImageTagger</title>
         <style>
             /* All existing styles remain unchanged */
             :root {
@@ -33,6 +33,7 @@
             .copy-btn,
             .help-btn,
             .config-btn,
+            .about-btn, <!-- Added about button class -->
             .toggle-switch input + .slider,
             .file-input-label {
                 color: var(--button-text-color);
@@ -227,203 +228,6 @@
                 background-color: #444;
             }
 
-            .toggle-dark-mode {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                gap: 10px;
-                margin-bottom: 20px;
-            }
-
-            .toggle-label {
-                font-weight: bold;
-            }
-
-            .toggle-switch {
-                position: relative;
-                display: inline-block;
-                width: 50px;
-                height: 24px;
-            }
-
-            .toggle-switch input {
-                opacity: 0;
-                width: 0;
-                height: 0;
-            }
-
-            .slider {
-                position: absolute;
-                cursor: pointer;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-color: #ccc;
-                transition: 0.4s;
-                border-radius: 24px;
-            }
-
-            .slider:before {
-                position: absolute;
-                content: "";
-                height: 16px;
-                width: 16px;
-                left: 4px;
-                bottom: 4px;
-                background-color: white;
-                transition: 0.4s;
-                border-radius: 50%;
-            }
-
-            input:checked + .slider {
-                background-color: #2196f3;
-            }
-
-            input:checked + .slider:before {
-                transform: translateX(26px);
-            }
-
-            .help-btn,
-            .config-btn {
-                padding: 10px 20px; /* Same padding for both buttons */
-                background-color: var(--button-bg);
-                border: 1px solid var(--border-color);
-                border-radius: 4px;
-                cursor: pointer;
-                min-width: 120px; /* Same minimum width */
-                text-align: center;
-            }
-
-            .help-btn:hover,
-            .config-btn:hover {
-                background-color: #e0e0e0;
-            }
-
-            .dark-mode .help-btn:hover,
-            .dark-mode .config-btn:hover {
-                background-color: #444;
-            }
-
-            .notification {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 10px 20px;
-                background-color: #4caf50;
-                color: white;
-                border-radius: 4px;
-                z-index: 1000;
-                display: none;
-            }
-
-            #helpModal {
-                display: none;
-                position: fixed;
-                z-index: 1001;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, 0.5);
-            }
-
-            .modal-content {
-                background-color: var(--bg-color);
-                margin: 15% auto;
-                padding: 20px;
-                border-radius: 8px;
-                width: 80%;
-                max-width: 500px;
-            }
-
-            .close {
-                color: #aaa;
-                float: right;
-                font-size: 28px;
-                font-weight: bold;
-                cursor: pointer;
-            }
-
-            .close:hover {
-                color: black;
-            }
-
-            #configModal {
-                display: none;
-                position: fixed;
-                z-index: 1002;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, 0.5);
-            }
-
-            .config-modal-content {
-                background-color: var(--bg-color);
-                margin: 15% auto;
-                padding: 20px;
-                border-radius: 8px;
-                width: 80%;
-                max-width: 500px;
-            }
-
-            .config-actions {
-                display: flex;
-                justify-content: space-between;
-                margin-top: 20px;
-            }
-
-            .config-btn {
-                padding: 10px 15px;
-                background-color: var(--button-bg);
-                border: 1px solid var(--border-color);
-                border-radius: 4px;
-                cursor: pointer;
-            }
-
-            .config-btn:hover {
-                background-color: #e0e0e0;
-            }
-
-            .dark-mode .config-btn:hover {
-                background-color: #444;
-            }
-
-            .file-input-wrapper {
-                position: relative;
-                overflow: hidden;
-                display: inline-block;
-            }
-
-            .file-input-wrapper input[type="file"] {
-                position: absolute;
-                left: 0;
-                top: 0;
-                opacity: 0;
-                width: 100%;
-                height: 100%;
-                cursor: pointer;
-            }
-
-            .file-input-label {
-                display: inline-block;
-                padding: 10px 15px;
-                background-color: var(--button-bg);
-                border: 1px solid var(--border-color);
-                border-radius: 4px;
-                cursor: pointer;
-            }
-
-            .file-input-label:hover {
-                background-color: #e0e0e0;
-            }
-
-            .dark-mode .file-input-label:hover {
-                background-color: #444;
-            }
-
             /* Calendar styles */
             .calendar-container {
                 position: absolute;
@@ -488,6 +292,439 @@
                 opacity: 0.5;
             }
 
+            /* New styles for parameter selection in config */
+            .config-param-section {
+                margin-bottom: 20px;
+                padding: 15px;
+                border-radius: 8px;
+                background-color: var(--result-bg);
+            }
+
+            .config-param-section h3 {
+                margin-top: 0;
+                margin-bottom: 15px;
+            }
+
+            .param-checkbox-container {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                margin-bottom: 5px;
+            }
+
+            .param-checkbox-container input[type="checkbox"] {
+                margin: 0;
+            }
+
+            /* New JSON export section */
+            .json-export-section {
+                margin-bottom: 20px;
+            }
+
+            .json-export-container {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 12px;
+                background-color: var(--result-bg);
+                border-radius: 4px;
+            }
+
+            .json-export-text {
+                flex: 1;
+                word-break: break-all;
+                font-family: monospace;
+            }
+
+            .json-export-btn {
+                padding: 8px 15px;
+                background-color: var(--button-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .json-export-btn:hover {
+                background-color: #e0e0e0;
+            }
+
+            .dark-mode .json-export-btn:hover {
+                background-color: #444;
+            }
+
+            /* About Modal Styles */
+            #aboutModal {
+                display: none;
+                position: fixed;
+                z-index: 1003; /* Higher than config modal */
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+
+            .about-modal-content {
+                background-color: var(--bg-color);
+                margin: 5% auto; /* Centered vertically and horizontally */
+                padding: 20px;
+                border-radius: 8px;
+                width: 80%;
+                max-width: 500px;
+                position: relative;
+            }
+
+            @media (max-width: 600px) {
+                .about-modal-content {
+                    width: 90%;
+                    margin: 10% auto;
+                }
+            }
+
+            @media (max-width: 400px) {
+                .about-modal-content {
+                    width: 95%;
+                    margin: 15% auto;
+                }
+            }
+
+            @media (max-width: 320px) {
+                .about-modal-content {
+                    width: 98%;
+                    margin: 20% auto;
+                }
+            }
+
+            @media (min-width: 1200px) {
+                .about-modal-content {
+                    width: 60%;
+                    max-width: 600px;
+                }
+            }
+
+            .modal-content h2 {
+                margin-top: 0;
+            }
+
+            .about-modal-content p {
+                margin-bottom: 15px;
+            }
+
+            /* New styles for parameter selection in config */
+            .config-param-section {
+                margin-bottom: 20px;
+                padding: 15px;
+                border-radius: 8px;
+                background-color: var(--result-bg);
+            }
+
+            .config-param-section h3 {
+                margin-top: 0;
+                margin-bottom: 15px;
+            }
+
+            .param-checkbox-container {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                margin-bottom: 5px;
+            }
+
+            .param-checkbox-container input[type="checkbox"] {
+                margin: 0;
+            }
+
+            /* Configuration Modal Styles - Updated width */
+            #configModal {
+                display: none;
+                position: fixed;
+                z-index: 1002;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                width: 700px; /* Increased width */
+                max-width: 95%;
+            }
+
+            .config-modal-content {
+                background-color: var(--bg-color);
+                padding: 20px;
+                border-radius: 8px;
+                width: 100%;
+            }
+
+            .config-modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+                cursor: move;
+                padding-bottom: 10px;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .config-modal-title {
+                margin: 0;
+                font-size: 1.2em;
+            }
+
+            .config-actions {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 20px;
+            }
+
+            .config-btn {
+                padding: 10px 15px;
+                background-color: var(--button-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .config-btn:hover {
+                background-color: #e0e0e0;
+            }
+
+            .dark-mode .config-btn:hover {
+                background-color: #444;
+            }
+
+            /* Dark Mode Toggle in Configuration */
+            .dark-mode-toggle-container {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-top: 15px;
+                padding: 10px;
+                background-color: var(--result-bg);
+                border-radius: 4px;
+            }
+
+            .dark-mode-toggle-label {
+                font-weight: bold;
+            }
+
+            /* Configuration Table Styles */
+            .config-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
+            }
+
+            .config-table th,
+            .config-table td {
+                border: 1px solid var(--border-color);
+                padding: 8px;
+                text-align: left;
+            }
+
+            .config-table th {
+                background-color: var(--button-bg);
+            }
+
+            /* File Input Styles */
+            .file-input-wrapper {
+                position: relative;
+                overflow: hidden;
+                display: inline-block;
+            }
+
+            .file-input-wrapper input[type="file"] {
+                position: absolute;
+                left: 0;
+                top: 0;
+                opacity: 0;
+                width: 100%;
+                height: 100%;
+                cursor: pointer;
+            }
+
+            .file-input-label {
+                display: inline-block;
+                padding: 10px 15px;
+                background-color: var(--button-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .file-input-label:hover {
+                background-color: #e0e0e0;
+            }
+
+            .dark-mode .file-input-label:hover {
+                background-color: #444;
+            }
+
+            /* Notification */
+            .notification {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 10px 20px;
+                background-color: #4caf50;
+                color: white;
+                border-radius: 4px;
+                z-index: 1000;
+                display: none;
+            }
+
+            /* Help Modal */
+            #helpModal {
+                display: none;
+                position: fixed;
+                z-index: 1001;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+
+            .modal-content {
+                background-color: var(--bg-color);
+                margin: 15% auto;
+                padding: 20px;
+                border-radius: 8px;
+                width: 80%;
+                max-width: 500px;
+            }
+
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            .close:hover {
+                color: black;
+            }
+
+            /* Toggle Dark Mode */
+            .toggle-dark-mode {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+
+            .toggle-label {
+                font-weight: bold;
+            }
+
+            .toggle-switch {
+                position: relative;
+                display: inline-block;
+                width: 50px;
+                height: 24px;
+            }
+
+            .toggle-switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+            .slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                transition: 0.4s;
+                border-radius: 24px;
+            }
+
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 16px;
+                width: 16px;
+                left: 4px;
+                bottom: 4px;
+                background-color: white;
+                transition: 0.4s;
+                border-radius: 50%;
+            }
+
+            input:checked + .slider {
+                background-color: #2196f3;
+            }
+
+            input:checked + .slider:before {
+                transform: translateX(26px);
+            }
+
+            /* Help and About Buttons */
+            .help-btn,
+            .config-btn,
+            .about-btn { <!-- Added about button styling -->
+                padding: 10px 20px; /* Same padding for both buttons */
+                background-color: var(--button-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                cursor: pointer;
+                min-width: 120px; /* Same minimum width */
+                text-align: center;
+            }
+
+            .help-btn:hover,
+            .config-btn:hover,
+            .about-btn:hover { <!-- Added hover effect for about button -->
+                background-color: #e0e0e0;
+            }
+
+            .dark-mode .help-btn:hover,
+            .dark-mode .config-btn:hover,
+            .dark-mode .about-btn:hover { <!-- Added dark mode hover effect for about button -->
+                background-color: #444;
+            }
+
+            /* Drag and Drop Styles */
+            .drop-zone {
+                border: 2px dashed var(--border-color);
+                border-radius: 8px;
+                padding: 20px;
+                text-align: center;
+                margin-top: 10px;
+                transition: all 0.3s ease;
+                background-color: var(--input-bg);
+            }
+
+            .drop-zone.highlight {
+                border-color: #2196f3;
+                background-color: rgba(33, 150, 243, 0.1);
+            }
+
+            .file-info {
+                margin-top: 10px;
+                font-size: 0.9em;
+                color: var(--text-color);
+            }
+
+            .reset-btn {
+                padding: 8px 15px;
+                background-color: var(--button-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 4px;
+                cursor: pointer;
+                margin-top: 10px;
+            }
+
+            .reset-btn:hover {
+                background-color: #e0e0e0;
+            }
+
+            .dark-mode .reset-btn:hover {
+                background-color: #444;
+            }
+
             @media (max-width: 600px) {
                 .field-row {
                     flex-direction: column;
@@ -507,18 +744,56 @@
                     flex-direction: column;
                     align-items: stretch;
                 }
+
+                #configModal {
+                    width: 95%;
+                    margin: 20px;
+                }
             }
+            /* Ensure bright white text for all buttons in dark mode */
+            .dark-mode .preset-btn,
+            .dark-mode .option-btn,
+            .dark-mode .date-btn,
+            .dark-mode .copy-btn,
+            .dark-mode .help-btn,
+            .dark-mode .config-btn,
+            .dark-mode .about-btn,
+            .dark-mode .json-export-btn,
+            .dark-mode .reset-btn {
+                color: #ffffff !important;
+            }
+
+            /* Ensure bright white text for hover states */
+            .dark-mode .preset-btn:hover,
+            .dark-mode .option-btn:hover,
+            .dark-mode .date-btn:hover,
+            .dark-mode .copy-btn:hover,
+            .dark-mode .help-btn:hover,
+            .dark-mode .config-btn:hover,
+            .dark-mode .about-btn:hover,
+            .dark-mode .json-export-btn:hover,
+            .dark-mode .reset-btn:hover {
+                color: #ffffff !important;
+            }
+
+            /* Ensure toggle switch slider text is bright */
+            .dark-mode .toggle-switch input + .slider {
+                color: #ffffff !important;
+            }
+
+            /* Ensure file input labels are bright */
+            .dark-mode .file-input-label {
+                color: #ffffff !important;
+            }
+
         </style>
     </head>
     <body>
         <div class="container">
-            <h1>Astro Filename & Title Generator</h1>
+            <h1>AstroImageTagger</h1>
 
             <!-- Presets -->
             <div class="presets" id="presetButtons">
-                <button class="preset-btn" data-preset="clear">
-                    Clear All
-                </button>
                 <button id="shuffleBtn" class="preset-btn">Shuffle</button>
                 <button id="cleanBtn" class="preset-btn">Clean</button>
             </div>
@@ -736,8 +1011,26 @@
                 </div>
             </div>
 
-            <!-- Toggle Dark Mode -->
-            <div class="toggle-dark-mode">
+            <!-- JSON Export Section -->
+            <div class="json-export-section">
+                <h2 class="section-title">Filename.json</h2>
+                <div id="json-drop-zone" class="drop-zone">
+                    <p>Drag & drop a JSON file here or click to browse</p>
+                    <div class="file-info" id="json-file-name">No file selected</div>
+                </div>
+                <div class="json-export-container">
+                    <div id="json-result" class="json-export-text">
+                        JSON configuration will appear here
+                    </div>
+                    <button id="save-json" class="json-export-btn">
+                        Download
+                    </button>
+                </div>
+                <button id="reset-filename" class="reset-btn">Reset to Auto-generated</button>
+            </div>
+
+            <!-- Toggle Dark Mode (Moved to configuration) -->
+            <div class="toggle-dark-mode" style="display: none;">
                 <label class="toggle-label">Dark Mode</label>
                 <label class="toggle-switch">
                     <input type="checkbox" id="darkModeToggle" />
@@ -755,6 +1048,8 @@
                 "
             >
                 <button class="help-btn" id="helpBtn">Help</button>
+                <button class="about-btn" id="aboutBtn">About</button>
+                <!-- Added About button -->
                 <button id="configBtn" class="config-btn">Configuration</button>
             </div>
         </div>
@@ -768,28 +1063,53 @@
                 <h2>Help</h2>
                 <p>
                     This tool generates filenames and image titles for
-                    astronomical imaging based on your inputs.
+                    astronomical imaging based on your inputs. It also saves your custom image tags into a JSON file for future use.
                 </p>
                 <p>You can:</p>
                 <ul>
                     <li>
-                        Select from presets for Solar, Planetary, or Deep Sky
-                        imaging
+                        Copy generated filenames and titles to clipboard with
+                        the buttons
+                    </li>
+                    <li>
+                        Create your custom presets and dropdown options by modifying the JSON configuration file.
+                    </li>
+
+                    <li>
+                        To avoid manual loading of the json-file each time, you can copy and paste the modified JSON into the
+                        HTML script section.
                     </li>
                     <li>
                         Use the "Shuffle" button to generate random settings for
                         quick testing
                     </li>
-                    <li>
-                        Copy generated filenames and titles to clipboard with
-                        the buttons
-                    </li>
-                    <li>Toggle between light and dark modes</li>
-                    <li>Use the Calendar button to select any date</li>
-                </ul>
+                </p>
+            </div>
+        </div>
+
+        <!-- About Modal -->
+        <div id="aboutModal">
+            <div class="about-modal-content">
+                <span class="close">&times;</span>
+                <h2>About AstroImageTagger</h2>
+                <p><strong>Version:</strong> <span id="appVersion"></span></p>
+                <p><strong>Release Date:</strong> <span id="appDate"></span></p>
                 <p>
-                    To customize presets and dropdown options, edit the
-                    configuration at the top of this HTML file.
+                    This tool generates filenames and image titles for
+                    astronomical imaging based on your inputs.
+                </p>
+                <p>
+                    The tool was solely coded via prompting
+                    <i>LM Studio</i> using
+                    <i>qwen3-coder-30b-a3b-instruct-mlx</i>. We don't provide
+                    any warranty or support for the code. Feel free to modify
+                    the code to your personal preferences.
+                </p>
+                <p>
+                    Update may be available here:
+                    <a href="https://svenkohle.github.io"
+                        >https://svenkohle.github.io</a
+                    >
                 </p>
             </div>
         </div>
@@ -797,9 +1117,46 @@
         <!-- Configuration Modal -->
         <div id="configModal">
             <div class="config-modal-content">
-                <span class="close">&times;</span>
-                <h2>Configuration Manager</h2>
+                <div class="config-modal-header" id="configModalHeader">
+                    <h2 class="config-modal-title">Configuration Manager</h2>
+                    <span class="close">&times;</span>
+                </div>
                 <p>Save or load your configuration settings:</p>
+
+                <!-- Combined Parameter Selection Table -->
+                <div class="config-param-section">
+                    <h3>Filename & Title Parameters</h3>
+                    <table class="config-table">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Filename</th>
+                                <th>Title</th>
+                            </tr>
+                        </thead>
+                        <tbody id="configTableBody">
+                            <!-- Dynamic rows will be inserted here -->
+                        </tbody>
+                    </table>
+
+                    <div style="margin-top: 10px; display: flex; gap: 10px;">
+                        <button id="selectAllParams" class="option-btn">
+                            Select All
+                        </button>
+                        <button id="clearAllParams" class="option-btn">
+                            Clear All
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dark Mode Toggle in Configuration -->
+                <div class="dark-mode-toggle-container">
+                    <label class="dark-mode-toggle-label">Dark Mode</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="configDarkModeToggle" />
+                        <span class="slider"></span>
+                    </label>
+                </div>
 
                 <div class="config-actions">
                     <button id="saveConfigBtn" class="config-btn">
@@ -817,17 +1174,32 @@
 
                 <p style="margin-top: 20px; font-size: 0.9em">
                     <strong>Configuration format:</strong><br />
-                    Presets and dropdown options will be saved as JSON.
+                    Presets, dropdown options, and parameter selections will be
+                    saved as JSON. The JSON file should contain a valid
+                    configuration object with the same structure as the embedded
+                    configuration. Ensure that the JSON file is properly
+                    formatted and contains all necessary fields.
+                </p>
+                <p style="margin-top: 20px; font-size: 0.9em">
+                    Note: You can
+                    adjust the order of parameters used for generating the
+                    filename and image title by changing the respective order in
+                    the JSON file.
                 </p>
             </div>
         </div>
 
         <!------------------------------------------------------------
-        Configuration of Presets, Dropdown Options, and Other Settings
-        Copy configuration from your JSON file into:
-        const EMBEDDED_CONFIG = <PASTE CONTENT OF YOUR CONFIG>
-        ------------------------------------------------------------->
+    Configuration of Presets, Dropdown Options, and Other Settings
+    Copy configuration from your JSON file into:
+    const EMBEDDED_CONFIG = <PASTE CONTENT OF YOUR CONFIG>
+    ------------------------------------------------------------->
+
         <script>
+            // Global variables for version information
+            const APP_VERSION = "1.0";
+            const APP_RELEASE_DATE = "2025-11-23";
+
             // Embedded Configuration - Now matches JSON format
             const EMBEDDED_CONFIG = {
                 presets: {
@@ -915,7 +1287,35 @@
                     ],
                     author: ["Astrobrot", "John Doe", "Jane Smith"],
                 },
-                darkMode: true,
+                darkMode: false,
+                filenameParams: [
+                    "target",
+                    "optics",
+                    "corrector",
+                    "focalLength",
+                    "apertureRatio",
+                    "filter",
+                    "camera",
+                    "exposures",
+                    "date",
+                    "time",
+                    "processing",
+                ],
+                titleParams: [
+                    "target",
+                    "optics",
+                    "corrector",
+                    "focalLength",
+                    "apertureRatio",
+                    "filter",
+                    "camera",
+                    "exposures",
+                    "date",
+                    "time",
+                    "processing",
+                    "author",
+                ],
+                titleSeparator: " - ",
             };
 
             // ********************************************************************
@@ -971,6 +1371,14 @@
                 nextMonth: document.getElementById("nextMonth"),
                 monthYear: document.querySelector(".calendar-month-year"),
                 presetButtons: document.getElementById("presetButtons"),
+                jsonResult: document.getElementById("json-result"),
+                saveJsonBtn: document.getElementById("save-json"),
+                aboutBtn: document.getElementById("aboutBtn"), <!-- Added About button -->
+                aboutModal: document.getElementById("aboutModal"), <!-- Added About modal -->
+                configDarkModeToggle: document.getElementById("configDarkModeToggle"),
+                jsonDropZone: document.getElementById("json-drop-zone"),
+                jsonFileName: document.getElementById("json-file-name"),
+                resetFilenameBtn: document.getElementById("reset-filename"),
             };
 
             // Calendar state
@@ -983,6 +1391,31 @@
                 filename: false,
                 title: false,
             };
+
+            // New variables for parameter selection
+            const allParamFields = [
+                { key: "target", label: "Target" },
+                { key: "optics", label: "Optics" },
+                { key: "corrector", label: "Corrector" },
+                { key: "focalLength", label: "Focal Length" },
+                { key: "apertureRatio", label: "Aperture Ratio" },
+                { key: "filter", label: "Filter" },
+                { key: "camera", label: "Camera" },
+                { key: "exposures", label: "Exposures" },
+                { key: "date", label: "Date" },
+                { key: "time", label: "Time" },
+                { key: "processing", label: "Processing" },
+                { key: "author", label: "Author" },
+            ];
+
+            // Store selected parameters (initialized from embedded config)
+            let selectedFilenameParams = new Set(
+                EMBEDDED_CONFIG.filenameParams,
+            );
+            let selectedTitleParams = new Set(EMBEDDED_CONFIG.titleParams);
+
+            // Track dropped file info
+            let droppedFileName = null;
 
             // Initialize dropdowns
             function initDropdowns() {
@@ -1178,7 +1611,8 @@
                     // Clear the calendar date if set
                     selectedDate = null;
 
-                    updateResults();
+                    // Reset to auto-generated filename
+                    resetToAutoGenerated();
                 });
 
                 elements.author.addEventListener("input", function () {
@@ -1207,29 +1641,101 @@
                 elements.processing.addEventListener("input", updateResults);
             }
 
+            // Initialize parameter selection UI for configuration
+            function initConfigParamUI() {
+                const tableBody = document.getElementById("configTableBody");
+
+                // Clear existing content
+                tableBody.innerHTML = "";
+
+                allParamFields.forEach((field) => {
+                    const row = document.createElement("tr");
+
+                    // Parameter name cell
+                    const paramNameCell = document.createElement("td");
+                    paramNameCell.textContent = field.label;
+                    row.appendChild(paramNameCell);
+
+                    // Filename checkbox cell
+                    const filenameCell = document.createElement("td");
+                    const filenameCheckbox = document.createElement("input");
+                    filenameCheckbox.type = "checkbox";
+                    filenameCheckbox.id = `config-filename-param-${field.key}`;
+                    filenameCheckbox.value = field.key;
+                    filenameCheckbox.checked = selectedFilenameParams.has(field.key);
+
+                    filenameCell.appendChild(filenameCheckbox);
+                    row.appendChild(filenameCell);
+
+                    // Title checkbox cell
+                    const titleCell = document.createElement("td");
+                    const titleCheckbox = document.createElement("input");
+                    titleCheckbox.type = "checkbox";
+                    titleCheckbox.id = `config-title-param-${field.key}`;
+                    titleCheckbox.value = field.key;
+                    titleCheckbox.checked = selectedTitleParams.has(field.key);
+
+                    titleCell.appendChild(titleCheckbox);
+                    row.appendChild(titleCell);
+
+                    // Add event listeners
+                    filenameCheckbox.addEventListener("change", function () {
+                        if (this.checked) {
+                            selectedFilenameParams.add(this.value);
+                        } else {
+                            selectedFilenameParams.delete(this.value);
+                        }
+                        updateResults();
+                    });
+
+                    titleCheckbox.addEventListener("change", function () {
+                        if (this.checked) {
+                            selectedTitleParams.add(this.value);
+                        } else {
+                            selectedTitleParams.delete(this.value);
+                        }
+                        updateResults();
+                    });
+
+                    tableBody.appendChild(row);
+                });
+
+                // Add event listeners for select/clear all buttons
+                document.getElementById("selectAllParams").addEventListener("click", function () {
+                    const checkboxes = tableBody.querySelectorAll("input[type='checkbox']");
+                    checkboxes.forEach(checkbox => {
+                        if (!checkbox.checked) {
+                            checkbox.checked = true;
+                            selectedFilenameParams.add(checkbox.value);
+                            selectedTitleParams.add(checkbox.value);
+                        }
+                    });
+                    updateResults();
+                });
+
+                document.getElementById("clearAllParams").addEventListener("click", function () {
+                    const checkboxes = tableBody.querySelectorAll("input[type='checkbox']");
+                    checkboxes.forEach(checkbox => {
+                        if (checkbox.checked) {
+                            checkbox.checked = false;
+                            selectedFilenameParams.delete(checkbox.value);
+                            selectedTitleParams.delete(checkbox.value);
+                        }
+                    });
+                    updateResults();
+                });
+            }
+
             // Generate filename based on selected fields
             function generateFilename() {
-                const fields = [
-                    { key: "target", label: "Target" },
-                    { key: "optics", label: "Optics" },
-                    { key: "corrector", label: "Corrector" },
-                    { key: "focalLength", label: "Focal Length" },
-                    { key: "apertureRatio", label: "Aperture Ratio" },
-                    { key: "filter", label: "Filter" },
-                    { key: "camera", label: "Camera" },
-                    { key: "exposures", label: "Exposures" },
-                    { key: "date", label: "Date" },
-                    { key: "time", label: "Time" },
-                    { key: "processing", label: "Processing" },
-                ];
-
                 let filename = "";
 
-                fields.forEach((field) => {
-                    const value = document.getElementById(field.key).value;
-                    if (value.trim() !== "") {
+                // Use the exact order from selectedFilenameParams
+                Array.from(selectedFilenameParams).forEach((key) => {
+                    const element = document.getElementById(key);
+                    if (element && element.value.trim() !== "") {
                         // Replace spaces with hyphens
-                        const cleanValue = value.replace(/\s+/g, "-");
+                        const cleanValue = element.value.replace(/\s+/g, "-");
 
                         if (filename === "") {
                             filename = cleanValue;
@@ -1251,31 +1757,18 @@
 
             // Generate image title
             function generateTitle() {
-                const fields = [
-                    { key: "target", label: "Target" },
-                    { key: "optics", label: "Optics" },
-                    { key: "corrector", label: "Corrector" },
-                    { key: "focalLength", label: "Focal Length" },
-                    { key: "apertureRatio", label: "Aperture Ratio" },
-                    { key: "filter", label: "Filter" },
-                    { key: "camera", label: "Camera" },
-                    { key: "exposures", label: "Exposures" },
-                    { key: "date", label: "Date" },
-                    { key: "time", label: "Time" },
-                    { key: "processing", label: "Processing" },
-                    { key: "author", label: "Author" },
-                ];
-
-                const separator = elements.titleSeparator.value || "-";
+                const separator =
+                    elements.titleSeparator.value ||
+                    EMBEDDED_CONFIG.titleSeparator;
 
                 let title = "";
 
-                fields.forEach((field) => {
-                    const value = document.getElementById(field.key).value;
-                    if (value.trim() !== "") {
+                // Use the exact order from selectedTitleParams
+                Array.from(selectedTitleParams).forEach((key) => {
+                    const element = document.getElementById(key);
+                    if (element && element.value.trim() !== "") {
                         // Replace spaces with hyphens
-                        //const cleanValue = value.replace(/\s+/g, "-");
-                        const cleanValue = value;
+                        const cleanValue = element.value;
 
                         if (title === "") {
                             title = cleanValue;
@@ -1288,25 +1781,69 @@
                 return title;
             }
 
+            // Generate JSON configuration - Modified to include only specific fields
+            function generateJSONConfig() {
+                const config = {};
+
+                // Only include the specified parameters in the JSON export
+                const selectedFields = [
+                    "target",
+                    "optics",
+                    "corrector",
+                    "focalLength",
+                    "apertureRatio",
+                    "filter",
+                    "camera",
+                    "exposures",
+                    "date",
+                    "time",
+                    "processing",
+                    "author",
+                ];
+
+                selectedFields.forEach((key) => {
+                    const element = document.getElementById(key);
+                    if (element && element.value !== undefined) {
+                        config[key] = element.value;
+                    }
+                });
+
+                return JSON.stringify(config, null, 2);
+            }
+
+            // Generate download filename based on dropped file
+            function generateDownloadFilename() {
+                if (droppedFileName) {
+                    // If a file was dropped, use its name + .json
+                    return droppedFileName.replace(/\.[^/.]+$/, "") + ".json";
+                } else {
+                    // If no file was dropped, use the generated filename
+                    return generateFilename().replace(/\.[^/.]+$/, "") + ".json";
+                }
+            }
+
+            // Reset to auto-generated filename
+            function resetToAutoGenerated() {
+                droppedFileName = null;
+                elements.jsonFileName.textContent = "No file selected";
+                updateResults();
+                showNotification("Filename reset to auto-generated");
+            }
+
             // Update results
             function updateResults() {
                 elements.filenameResult.textContent = generateFilename();
                 elements.titleResult.textContent = generateTitle();
+                elements.jsonResult.textContent = generateJSONConfig();
+
+                // Update downloadable filename display
+                const downloadFilename = generateDownloadFilename();
+                elements.jsonFileName.textContent = `Download as: ${downloadFilename}`;
             }
 
             // Apply preset
             function applyPreset(presetName) {
-                if (presetName === "clear") {
-                    // Clear all fields
-                    document.querySelectorAll("input, select").forEach((el) => {
-                        if (
-                            el.id !== "filetype" &&
-                            el.id !== "titleSeparator"
-                        ) {
-                            el.value = "";
-                        }
-                    });
-                } else if (PRESETS[presetName]) {
+                if (PRESETS[presetName]) {
                     const preset = PRESETS[presetName];
 
                     // Apply values from preset
@@ -1637,14 +2174,46 @@
                 elements.helpModal.style.display = "none";
             }
 
+            // Show about modal
+            function showAbout() {
+                elements.aboutModal.style.display = "block";
+            }
+
+            // Close about modal
+            function closeAbout() {
+                elements.aboutModal.style.display = "none";
+            }
+
             // Show configuration modal
             function showConfig() {
                 elements.configModal.style.display = "block";
+
+                // Darken background when config modal is open
+                const overlay = document.createElement('div');
+                overlay.id = 'config-overlay';
+                overlay.style.position = 'fixed';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100%';
+                overlay.style.height = '100%';
+                overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                overlay.style.zIndex = '1001';
+                document.body.appendChild(overlay);
+
+                // Update dark mode toggle in config modal
+                elements.configDarkModeToggle.checked =
+                    document.body.classList.contains("dark-mode");
             }
 
             // Close configuration modal
             function closeConfig() {
                 elements.configModal.style.display = "none";
+
+                // Remove background overlay
+                const overlay = document.getElementById('config-overlay');
+                if (overlay) {
+                    overlay.remove();
+                }
             }
 
             // Save configuration to JSON file
@@ -1652,7 +2221,12 @@
                 const config = {
                     presets: PRESETS,
                     options: OPTIONS,
-                    darkMode: elements.darkModeToggle.checked,
+                    darkMode: elements.configDarkModeToggle.checked, // Get from config modal toggle
+                    filenameParams: Array.from(selectedFilenameParams),
+                    titleParams: Array.from(selectedTitleParams),
+                    titleSeparator:
+                        elements.titleSeparator.value ||
+                        EMBEDDED_CONFIG.titleSeparator,
                 };
 
                 const dataStr = JSON.stringify(config, null, 2);
@@ -1690,9 +2264,31 @@
                             Object.assign(OPTIONS, config.options);
                         }
 
+                        // Apply parameter selections if present
+                        if (config.filenameParams) {
+                            selectedFilenameParams = new Set(
+                                config.filenameParams,
+                            );
+                        }
+
+                        if (config.titleParams) {
+                            selectedTitleParams = new Set(config.titleParams);
+                        }
+
+                        // Apply title separator if present
+                        if (config.titleSeparator !== undefined) {
+                            elements.titleSeparator.value =
+                                config.titleSeparator;
+                        }
+
                         // Apply dark mode setting if present
                         if (config.darkMode !== undefined) {
+                            elements.configDarkModeToggle.checked = config.darkMode;
+
+                            // Apply to main toggle if needed
                             elements.darkModeToggle.checked = config.darkMode;
+
+                            // Apply actual dark mode class
                             if (config.darkMode) {
                                 document.body.classList.add("dark-mode");
                             } else {
@@ -1706,10 +2302,15 @@
                         // Refresh preset buttons to show only those in loaded config
                         refreshPresetButtons();
 
+                        // Reinitialize parameter selection UI to prevent duplicates
+                        initConfigParamUI();
+
                         // Apply current values to fields (if they exist)
                         if (elements.target.value) applyPreset("solar"); // Just to trigger update
 
                         showNotification("Configuration loaded successfully!");
+                        // Close the config modal after loading
+                        closeConfig();
                     } catch (error) {
                         console.error("Error parsing config file:", error);
                         showNotification(
@@ -1970,13 +2571,138 @@
                 }
             }
 
+            // Save JSON configuration to a file
+            function saveJSONConfig() {
+                const jsonContent = generateJSONConfig();
+                const blob = new Blob([jsonContent], {
+                    type: "application/json",
+                });
+                const url = URL.createObjectURL(blob);
+
+                // Create a temporary link element
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = generateDownloadFilename();
+                document.body.appendChild(link);
+                link.click();
+
+                // Clean up
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+
+                showNotification("JSON configuration saved successfully!");
+            }
+
+            // Handle file drop for JSON
+            function handleFileDrop(event) {
+                event.preventDefault();
+                elements.jsonDropZone.classList.remove('highlight');
+
+                const files = event.dataTransfer.files;
+                if (files.length > 0) {
+                    processDroppedFile(files[0]);
+                }
+            }
+
+            // Process dropped file
+            function processDroppedFile(file) {
+                // Store the filename for later use (without extension)
+                droppedFileName = file.name;
+
+                if (file.type === 'application/json' || file.name.endsWith('.json')) {
+                    // Handle JSON files
+                    elements.jsonFileName.textContent = `Dropped: ${file.name}`;
+
+                    // Read the file content
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            // Parse the JSON content
+                            const jsonData = JSON.parse(e.target.result);
+
+                            // Update fields with values from the file
+                            Object.keys(jsonData).forEach(key => {
+                                if (elements[key]) {
+                                    elements[key].value = jsonData[key];
+                                }
+                            });
+
+                            // Update results
+                            updateResults();
+
+                            showNotification("JSON file loaded successfully!");
+                        } catch (error) {
+                            console.error("Error parsing JSON file:", error);
+                            showNotification(
+                                "Invalid JSON format in dropped file!",
+                                true
+                            );
+                        }
+                    };
+                    reader.readAsText(file);
+                } else {
+                    // Handle non-JSON files - just update the filename
+                    elements.jsonFileName.textContent = `Dropped: ${file.name}`;
+
+                    // Update the filename for download purposes
+                    updateResults();
+
+                    showNotification(`File ${file.name} processed (non-JSON)`);
+                }
+            }
+
+            // Handle drag events
+            function handleDragEvents() {
+                elements.jsonDropZone.addEventListener('dragover', (event) => {
+                    event.preventDefault();
+                    elements.jsonDropZone.classList.add('highlight');
+                });
+
+                elements.jsonDropZone.addEventListener('dragleave', (event) => {
+                    event.preventDefault();
+                    elements.jsonDropZone.classList.remove('highlight');
+                });
+
+                elements.jsonDropZone.addEventListener('drop', handleFileDrop);
+
+                // Handle click to select file
+                elements.jsonDropZone.addEventListener('click', () => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.json';
+                    input.onchange = (e) => {
+                        if (e.target.files.length > 0) {
+                            processDroppedFile(e.target.files[0]);
+                        }
+                    };
+                    input.click();
+                });
+            }
+
             // Initialize the application
             function init() {
+                // Set version and date in about modal
+                document.getElementById("appVersion").textContent = APP_VERSION;
+                document.getElementById("appDate").textContent =
+                    APP_RELEASE_DATE;
+
                 // Initialize dark mode based on embedded configuration
                 initializeDarkMode();
 
+                // Set initial title separator from config
+                elements.titleSeparator.value = EMBEDDED_CONFIG.titleSeparator;
+
                 initDropdowns();
                 initCalendar();
+
+                // Initialize config parameter UI
+                initConfigParamUI();
+
+                // Handle drag and drop functionality
+                handleDragEvents();
+
+                // Reset button event listener
+                elements.resetFilenameBtn.addEventListener('click', resetToAutoGenerated);
 
                 // Event listeners for fields (except the option buttons which are handled above)
                 document.querySelectorAll("input, select").forEach((el) => {
@@ -2009,13 +2735,27 @@
                     );
                 });
 
+                // Save JSON button
+                elements.saveJsonBtn.addEventListener("click", saveJSONConfig);
+
                 // Help button
                 elements.helpBtn.addEventListener("click", showHelp);
                 elements.closeModal.addEventListener("click", closeHelp);
 
+                // About button
+                elements.aboutBtn.addEventListener("click", showAbout);
+                document
+                    .querySelector("#aboutModal .close")
+                    .addEventListener("click", closeAbout);
+
                 // Configuration button
-                elements.configBtn.addEventListener("click", showConfig);
-                elements.saveConfigBtn.addEventListener("click", saveConfig);
+                elements.configBtn.addEventListener("click", function() {
+                    if (elements.configModal.style.display === "block") {
+                        closeConfig();
+                    } else {
+                        showConfig();
+                    }
+                });                elements.saveConfigBtn.addEventListener("click", saveConfig);
                 elements.loadConfigInput.addEventListener("change", loadConfig);
 
                 // Close modals when clicking outside
@@ -2026,6 +2766,9 @@
                     if (event.target === elements.configModal) {
                         closeConfig();
                     }
+                    if (event.target === elements.aboutModal) {
+                        closeAbout();
+                    }
                 });
 
                 // Add event listener for the X button in config modal
@@ -2033,20 +2776,29 @@
                     .querySelector("#configModal .close")
                     .addEventListener("click", closeConfig);
 
-                // Dark mode toggle
+                // Dark mode toggle (for main UI)
                 elements.darkModeToggle.addEventListener(
                     "change",
                     toggleDarkMode,
                 );
+
+                // Config modal dark mode toggle
+                elements.configDarkModeToggle.addEventListener("change", function() {
+                    if (this.checked) {
+                        document.body.classList.add("dark-mode");
+                    } else {
+                        document.body.classList.remove("dark-mode");
+                    }
+
+                    // Save to localStorage for persistence
+                    localStorage.setItem("darkMode", this.checked);
+                });
 
                 // Apply saved dark mode setting
                 applyDarkModeFromStorage();
 
                 // Initial update
                 updateResults();
-
-                // Initialize preset buttons based on initial PRESETS
-                refreshPresetButtons();
             }
 
             // Run initialization when page loads
